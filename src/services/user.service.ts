@@ -42,4 +42,39 @@ export class UserService {
     const userCount = await prisma.user.count({ where: { role: 'STUDENT' } });
     return { totalOrganizations: orgCount, totalStudents: userCount };
   }
+
+  static async getProfile(userId: string) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        status: true,
+        orgId: true,
+        bio: true,
+        location: true,
+        linkedIn: true,
+        avatarUrl: true,
+        createdAt: true
+      }
+    });
+  }
+
+  static async updateProfile(userId: string, data: any) {
+    return prisma.user.update({
+      where: { id: userId },
+      data,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        bio: true,
+        location: true,
+        linkedIn: true,
+        avatarUrl: true
+      }
+    });
+  }
 }

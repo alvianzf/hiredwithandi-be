@@ -52,4 +52,26 @@ export declare class UserService {
         totalOrganizations: number;
         totalStudents: number;
     }>;
+    static getProfile(userId: string): Promise<{
+        id: string;
+        email: string;
+        name: string;
+        role: import(".prisma/client").$Enums.Role;
+        status: import(".prisma/client").$Enums.UserStatus;
+        bio: string | null;
+        location: string | null;
+        linkedIn: string | null;
+        avatarUrl: string | null;
+        createdAt: Date;
+        orgId: string | null;
+    } | null>;
+    static updateProfile(userId: string, data: any): Promise<{
+        id: string;
+        email: string;
+        name: string;
+        bio: string | null;
+        location: string | null;
+        linkedIn: string | null;
+        avatarUrl: string | null;
+    }>;
 }

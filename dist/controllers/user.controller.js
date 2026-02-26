@@ -1,5 +1,5 @@
 import { OrganizationService, UserService } from '../services/user.service.js';
-import { organizationSchema } from '../validators/user.validator.js';
+import { organizationSchema, profileUpdateSchema } from '../validators/user.validator.js';
 export class OrganizationController {
     static async getAll(req, res) {
         try {
@@ -42,6 +42,25 @@ export class UserController {
         }
         catch (error) {
             res.status(500).json({ error: { message: error.message } });
+        }
+    }
+    static async getProfile(req, res) {
+        try {
+            const profile = await UserService.getProfile(req.user.id);
+            res.json({ data: profile });
+        }
+        catch (error) {
+            res.status(500).json({ error: { message: error.message } });
+        }
+    }
+    static async updateProfile(req, res) {
+        try {
+            const validatedData = profileUpdateSchema.parse(req.body);
+            const profile = await UserService.updateProfile(req.user.id, validatedData);
+            res.json({ data: profile });
+        }
+        catch (error) {
+            res.status(400).json({ error: { message: error.message } });
         }
     }
 }

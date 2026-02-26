@@ -7,4 +7,6 @@ export declare class OrganizationController {
 export declare class UserController {
     static getStudents(req: AuthRequest, res: Response): Promise<Response<any, Record<string, any>> | undefined>;
     static getStats(req: Request, res: Response): Promise<void>;
+    static getProfile(req: AuthRequest, res: Response): Promise<void>;
+    static updateProfile(req: AuthRequest, res: Response): Promise<void>;
 }

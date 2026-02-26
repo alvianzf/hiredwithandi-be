@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { OrganizationService, UserService } from '../services/user.service.js';
-import { organizationSchema } from '../validators/user.validator.js';
+import { organizationSchema, profileUpdateSchema } from '../validators/user.validator.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
 
 export class OrganizationController {
@@ -45,6 +45,25 @@ export class UserController {
       res.json({ data: stats });
     } catch (error: any) {
       res.status(500).json({ error: { message: error.message } });
+    }
+  }
+
+  static async getProfile(req: AuthRequest, res: Response) {
+    try {
+      const profile = await UserService.getProfile(req.user!.id);
+      res.json({ data: profile });
+    } catch (error: any) {
+      res.status(500).json({ error: { message: error.message } });
+    }
+  }
+
+  static async updateProfile(req: AuthRequest, res: Response) {
+    try {
+      const validatedData = profileUpdateSchema.parse(req.body);
+      const profile = await UserService.updateProfile(req.user!.id, validatedData);
+      res.json({ data: profile });
+    } catch (error: any) {
+      res.status(400).json({ error: { message: error.message } });
     }
   }
 }

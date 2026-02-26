@@ -46,6 +46,16 @@ const options = {
                         orgId: { type: 'string', nullable: true },
                     },
                 },
+                ProfileUpdate: {
+                    type: 'object',
+                    properties: {
+                        name: { type: 'string' },
+                        bio: { type: 'string', nullable: true },
+                        location: { type: 'string', nullable: true },
+                        linkedIn: { type: 'string', format: 'url', nullable: true },
+                        avatarUrl: { type: 'string', description: 'Base64 encoded photo', nullable: true },
+                    },
+                },
             },
         },
         security: [
