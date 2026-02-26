@@ -4,10 +4,14 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import jobRoutes from './routes/job.routes.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+// Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api/jobs', jobRoutes);
