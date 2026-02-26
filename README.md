@@ -124,10 +124,17 @@ sudo systemctl restart nginx
 
 ### 1. Authentication (`/auth`)
 
-| Method | Endpoint         | Description       | Auth |
-| ------ | ---------------- | ----------------- | ---- |
-| POST   | `/auth/register` | Register new user | None |
-| POST   | `/auth/login`    | Login and get JWT | None |
+**Login Flow:**
+
+1. The frontend first calls `/auth/check-email` to see if the user exists.
+2. If `exists: true`, prompt for password and call `/auth/login`.
+3. If `exists: false`, prompt for name/password and call `/auth/register`.
+
+| Method | Endpoint            | Description                     | Auth |
+| ------ | ------------------- | ------------------------------- | ---- |
+| POST   | `/auth/check-email` | Check if email exists in system | None |
+| POST   | `/auth/register`    | Register new user               | None |
+| POST   | `/auth/login`       | Login and get JWT               | None |
 
 ### 2. Organizations (`/`)
 
@@ -228,4 +235,8 @@ npx prisma generate
 
 # Database Migration (Push)
 npx prisma db push
+
+# Seed Database (Creates default Superadmin)
+npx prisma db seed
+# Superadmin credentials: superadmin@hiredwithandi.com / password123
 ```
