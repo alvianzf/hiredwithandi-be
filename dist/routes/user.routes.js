@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { OrganizationController, UserController } from '../controllers/user.controller.js';
+import { AnalyticsController } from '../controllers/analytics.controller.js';
 import { authenticate, authorize } from '../middlewares/auth.middleware.js';
 const router = Router();
 /**
@@ -78,5 +79,22 @@ router.get('/students', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserCo
  *         description: Success
  */
 router.get('/stats', authenticate, authorize(['SUPERADMIN']), UserController.getStats);
+/**
+ * @openapi
+ * /organizations/{id}/stats:
+ *   get:
+ *     summary: Get organization job statistics
+ *     tags: [Analytics]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.get('/organizations/:id/stats', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getOrgStats);
 export default router;
 //# sourceMappingURL=user.routes.js.map

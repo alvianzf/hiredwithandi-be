@@ -42,6 +42,18 @@ router.use(authenticate);
  *                 data:
  *                   $ref: '#/components/schemas/Job'
  */
+/**
+ * @openapi
+ * /jobs/stats:
+ *   get:
+ *     summary: Get user job statistics
+ *     tags: [Analytics]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.get('/stats', JobController.getAll); // Placeholder, will update to AnalyticsController
 router.get('/', JobController.getAll);
 router.post('/', JobController.create);
 /**
