@@ -154,6 +154,68 @@ sudo systemctl restart nginx
 
 ---
 
+## 📦 Data Models (Sample Payloads)
+
+### Job Object
+
+**Sample Response / Request Body**
+
+```json
+{
+  "id": "u-u-i-d",
+  "company": "Google",
+  "position": "Software Engineer",
+  "url": "https://careers.google.com/jobs/...",
+  "salary": "10k - 15k",
+  "notes": "Referral from Andi",
+  "workType": "REMOTE",
+  "location": "Jakarta, Indonesia",
+  "jobFitPercentage": 85,
+  "status": "applied",
+  "boardPosition": 1.0,
+  "dateApplied": "2024-03-20T10:00:00Z",
+  "statusChangedAt": "2024-03-20T10:00:00Z"
+}
+```
+
+### User / Student Object
+
+**Sample Response**
+
+```json
+{
+  "id": "u-u-i-d",
+  "email": "student@example.com",
+  "name": "Alvian Azfa",
+  "role": "STUDENT",
+  "status": "ACTIVE",
+  "orgId": "org-u-u-i-d",
+  "bio": "Passionate developer",
+  "avatarUrl": "https://..."
+}
+```
+
+### Authentication Response
+
+**Sample Response (`POST /auth/login`)**
+
+```json
+{
+  "data": {
+    "token": "eyJhbGci...",
+    "user": {
+      "id": "u-u-i-d",
+      "email": "user@example.com",
+      "name": "User Name",
+      "role": "STUDENT",
+      "orgId": "org-uuid"
+    }
+  }
+}
+```
+
+---
+
 ## Development
 
 ```bash
