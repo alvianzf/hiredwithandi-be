@@ -3,9 +3,9 @@ export declare class JobService {
         history: {
             id: string;
             status: string;
-            jobId: string;
             enteredAt: Date;
             leftAt: Date | null;
+            jobId: string;
         }[];
     } & {
         id: string;
