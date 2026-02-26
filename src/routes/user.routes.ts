@@ -34,6 +34,32 @@ router.post('/organizations', authenticate, authorize(['SUPERADMIN']), Organizat
 
 /**
  * @openapi
+ * /profile:
+ *   get:
+ *     summary: Get user profile
+ *     tags: [Profile]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Success
+ *   patch:
+ *     summary: Update user profile (including photo)
+ *     tags: [Profile]
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProfileUpdate'
+ *     responses:
+ *       200:
+ *         description: Updated
+ */
+router.get('/profile', authenticate, UserController.getProfile);
+router.patch('/profile', authenticate, UserController.updateProfile);
+
+/**
+ * @openapi
  * /students:
  *   get:
  *     summary: List students in an organization
