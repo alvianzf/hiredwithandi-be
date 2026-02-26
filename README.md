@@ -236,7 +236,7 @@ npx prisma generate
 # Database Migration (Push)
 npx prisma db push
 
-# Seed Database (Creates default Superadmin)
+# Seed Database (Creates default Superadmin based on .env)
+# SUPERADMIN_EMAIL and SUPERADMIN_PASSWORD
 npx prisma db seed
-# Superadmin credentials: superadmin@hiredwithandi.com / password123
 ```

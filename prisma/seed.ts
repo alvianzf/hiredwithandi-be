@@ -6,14 +6,15 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
-  const superadminEmail = 'superadmin@hiredwithandi.com';
+  const superadminEmail = process.env.SUPERADMIN_EMAIL || 'superadmin@hiredwithandi.com';
+  const superadminPassword = process.env.SUPERADMIN_PASSWORD || 'password123';
 
   const existingSuperadmin = await prisma.user.findUnique({
     where: { email: superadminEmail }
   });
 
   if (!existingSuperadmin) {
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash(superadminPassword, 10);
     const superadmin = await prisma.user.create({
       data: {
         email: superadminEmail,
