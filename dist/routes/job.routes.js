@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { JobController } from '../controllers/job.controller.js';
+import { AnalyticsController } from '../controllers/analytics.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 const router = Router();
 router.use(authenticate);
@@ -53,7 +54,7 @@ router.use(authenticate);
  *       200:
  *         description: Success
  */
-router.get('/stats', JobController.getAll); // Placeholder, will update to AnalyticsController
+router.get('/stats', AnalyticsController.getUserStats);
 router.get('/', JobController.getAll);
 router.post('/', JobController.create);
 /**
