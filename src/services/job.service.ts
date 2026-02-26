@@ -1,4 +1,5 @@
 import prisma from '../config/prisma.js';
+import { Prisma } from '@prisma/client';
 
 export class JobService {
   static async getUserJobs(userId: string) {
@@ -10,7 +11,7 @@ export class JobService {
   }
 
   static async createJob(userId: string, data: any) {
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create job
       const job = await tx.job.create({
         data: {
@@ -34,7 +35,7 @@ export class JobService {
   }
 
   static async updateJobStatus(userId: string, jobId: string, status: string, boardPosition?: number) {
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const currentJob = await tx.job.findUnique({
         where: { id: jobId, userId }
       });

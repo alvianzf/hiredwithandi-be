@@ -1,0 +1,55 @@
+export declare class OrganizationService {
+    static getAll(): Promise<({
+        _count: {
+            users: number;
+        };
+    } & {
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
+    static create(data: {
+        name: string;
+    }): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    static getById(id: string): Promise<({
+        users: {
+            id: string;
+            email: string;
+            passwordHash: string;
+            name: string;
+            role: import(".prisma/client").$Enums.Role;
+            status: import(".prisma/client").$Enums.UserStatus;
+            bio: string | null;
+            location: string | null;
+            linkedIn: string | null;
+            avatarUrl: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            orgId: string | null;
+        }[];
+    } & {
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }) | null>;
+}
+export declare class UserService {
+    static getStudentsByOrg(orgId: string): Promise<{
+        id: string;
+        email: string;
+        name: string;
+        status: import(".prisma/client").$Enums.UserStatus;
+        createdAt: Date;
+    }[]>;
+    static getSuperadminStats(): Promise<{
+        totalOrganizations: number;
+        totalStudents: number;
+    }>;
+}
