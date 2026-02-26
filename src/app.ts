@@ -7,8 +7,6 @@ import jobRoutes from './routes/job.routes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 
-dotenv.config();
-
 const app = express();
 
 app.use(cors());
