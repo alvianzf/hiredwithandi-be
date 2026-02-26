@@ -25,13 +25,13 @@ export declare class OrganizationService {
             name: string;
             role: import(".prisma/client").$Enums.Role;
             status: import(".prisma/client").$Enums.UserStatus;
+            orgId: string | null;
             bio: string | null;
             location: string | null;
             linkedIn: string | null;
             avatarUrl: string | null;
             createdAt: Date;
             updatedAt: Date;
-            orgId: string | null;
         }[];
     } & {
         id: string;
@@ -58,12 +58,12 @@ export declare class UserService {
         name: string;
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
+        orgId: string | null;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
         avatarUrl: string | null;
         createdAt: Date;
-        orgId: string | null;
     } | null>;
     static updateProfile(userId: string, data: any): Promise<{
         id: string;

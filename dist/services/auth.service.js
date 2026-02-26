@@ -2,6 +2,12 @@ import prisma from '../config/prisma.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 export class AuthService {
+    static async checkEmail(email) {
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
+        return { exists: !!user };
+    }
     static async register(data) {
         const hashedPassword = await bcrypt.hash(data.password, 10);
         return prisma.user.create({

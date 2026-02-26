@@ -3,6 +3,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export class AuthService {
+  static async checkEmail(email: string) {
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+    return { exists: !!user };
+  }
+
   static async register(data: any) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
 

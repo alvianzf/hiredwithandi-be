@@ -3,6 +3,26 @@ import { AuthController } from '../controllers/auth.controller.js';
 const router = Router();
 /**
  * @openapi
+ * /auth/check-email:
+ *   post:
+ *     summary: Check if email exists
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email: { type: string }
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.post('/check-email', AuthController.checkEmail);
+/**
+ * @openapi
  * /auth/register:
  *   post:
  *     summary: Register a new user

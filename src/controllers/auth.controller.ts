@@ -1,8 +1,20 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service.js';
-import { loginSchema, registerSchema } from '../validators/auth.validator.js';
+import { loginSchema, registerSchema, checkEmailSchema } from '../validators/auth.validator.js';
 
 export class AuthController {
+  static async checkEmail(req: Request, res: Response) {
+    try {
+      const { email } = checkEmailSchema.parse(req.body);
+      const result = await AuthService.checkEmail(email);
+      res.json({ data: result });
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ error: { message: 'Validation failed', details: error.errors } });
+      }
+      res.status(500).json({ error: { message: error.message } });
+    }
+  }
   static async register(req: Request, res: Response) {
     try {
       const validatedData = registerSchema.parse(req.body);
