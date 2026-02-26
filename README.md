@@ -11,6 +11,7 @@ A scalable, maintainable, and type-safe backend for the HiredWithAndi ecosystem.
 - **ORM**: Prisma
 - **Validation**: Zod
 - **Authentication**: JWT & Bcrypt
+- **Storage**: Cloudinary (via Base64 upload)
 
 ---
 

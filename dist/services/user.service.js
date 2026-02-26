@@ -1,4 +1,5 @@
 import prisma from '../config/prisma.js';
+import cloudinary from '../config/cloudinary.js';
 export class OrganizationService {
     static async getAll() {
         return prisma.organization.findMany({
@@ -56,9 +57,23 @@ export class UserService {
         });
     }
     static async updateProfile(userId, data) {
+        let updateData = { ...data };
+        // If avatarUrl is a Base64 string, upload to Cloudinary
+        if (data.avatarUrl && data.avatarUrl.startsWith('data:image')) {
+            try {
+                const uploadResponse = await cloudinary.uploader.upload(data.avatarUrl, {
+                    folder: 'hwa_profiles',
+                    resource_type: 'image'
+                });
+                updateData.avatarUrl = uploadResponse.secure_url;
+            }
+            catch (error) {
+                throw new Error(`Profile photo upload failed: ${error.message}`);
+            }
+        }
         return prisma.user.update({
             where: { id: userId },
-            data,
+            data: updateData,
             select: {
                 id: true,
                 email: true,
