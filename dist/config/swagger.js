@@ -21,6 +21,32 @@ const options = {
                     bearerFormat: 'JWT',
                 },
             },
+            schemas: {
+                Job: {
+                    type: 'object',
+                    required: ['company', 'position', 'status'],
+                    properties: {
+                        id: { type: 'string', format: 'uuid' },
+                        company: { type: 'string' },
+                        position: { type: 'string' },
+                        url: { type: 'string', nullable: true },
+                        status: { type: 'string' },
+                        workType: { type: 'string', enum: ['REMOTE', 'ONSITE', 'HYBRID'] },
+                        jobFitPercentage: { type: 'number', minimum: 0, maximum: 100 },
+                        dateApplied: { type: 'string', format: 'date-time' },
+                    },
+                },
+                User: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'string', format: 'uuid' },
+                        email: { type: 'string' },
+                        name: { type: 'string' },
+                        role: { type: 'string', enum: ['SUPERADMIN', 'ADMIN', 'STUDENT'] },
+                        orgId: { type: 'string', nullable: true },
+                    },
+                },
+            },
         },
         security: [
             {

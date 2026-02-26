@@ -16,10 +16,20 @@ router.use(authenticate);
  *     responses:
  *       200:
  *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Job'
  *   post:
  *     summary: Create a job
  *     tags: [Jobs]
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -27,6 +37,13 @@ router.use(authenticate);
  *     responses:
  *       201:
  *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Job'
  */
 router.get('/', JobController.getAll);
 router.post('/', JobController.create);
