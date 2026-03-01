@@ -75,6 +75,7 @@ export declare class UserService {
         totalStudents: number;
     }>;
     static getProfile(userId: string): Promise<{
+        organization: string;
         id: string;
         email: string;
         name: string;

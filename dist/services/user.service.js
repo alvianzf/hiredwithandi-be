@@ -55,7 +55,7 @@ export class UserService {
         return { totalOrganizations: orgCount, totalStudents: userCount };
     }
     static async getProfile(userId) {
-        return prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
                 id: true,
@@ -68,9 +68,18 @@ export class UserService {
                 location: true,
                 linkedIn: true,
                 avatarUrl: true,
-                createdAt: true
+                createdAt: true,
+                organization: {
+                    select: { name: true }
+                }
             }
         });
+        if (!user)
+            return null;
+        return {
+            ...user,
+            organization: user.organization?.name || ''
+        };
     }
     static async updateProfile(userId, data) {
         let updateData = { ...data };
