@@ -110,7 +110,7 @@ export class UserService {
             return null;
         return {
             ...user,
-            organization: user.organization || null
+            organization: user.organization?.name || ''
         };
     }
     static async updateProfile(userId, data, file) {

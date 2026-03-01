@@ -80,9 +80,7 @@ export declare class UserService {
         totalMembers: number;
     }>;
     static getProfile(userId: string): Promise<{
-        organization: {
-            name: string;
-        } | null;
+        organization: string;
         id: string;
         email: string;
         name: string;
