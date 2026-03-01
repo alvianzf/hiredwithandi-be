@@ -47,6 +47,29 @@ router.post('/check-email', AuthController.checkEmail);
 router.post('/register', AuthController.register);
 /**
  * @openapi
+ * /auth/setup-password:
+ *   post:
+ *     summary: Sets a password for a pre-created account and logs the user in
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email: { type: string }
+ *               password: { type: string }
+ *     responses:
+ *       200:
+ *         description: Password successfully set and logged in
+ *       400:
+ *         description: Invalid request or user already has password
+ */
+router.post('/setup-password', AuthController.setupPassword);
+/**
+ * @openapi
  * /auth/login:
  *   post:
  *     summary: User login
@@ -66,5 +89,25 @@ router.post('/register', AuthController.register);
  *         description: Login successful
  */
 router.post('/login', AuthController.login);
+/**
+ * @openapi
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [refreshToken]
+ *             properties:
+ *               refreshToken: { type: string }
+ *     responses:
+ *       200:
+ *         description: Token refreshed
+ */
+router.post('/refresh', AuthController.refresh);
 export default router;
 //# sourceMappingURL=auth.routes.js.map

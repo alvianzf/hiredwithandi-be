@@ -13,4 +13,7 @@ export const loginSchema = z.object({
 export const checkEmailSchema = z.object({
     email: z.string().email()
 });
+export const refreshTokenSchema = z.object({
+    refreshToken: z.string()
+});
 //# sourceMappingURL=auth.validator.js.map

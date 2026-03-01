@@ -30,6 +30,7 @@ const router = Router();
  */
 router.get('/organizations', authenticate, authorize(['SUPERADMIN']), OrganizationController.getAll);
 router.post('/organizations', authenticate, authorize(['SUPERADMIN']), OrganizationController.create);
+router.patch('/organizations/:id', authenticate, authorize(['SUPERADMIN']), OrganizationController.update);
 /**
  * @openapi
  * /profile:
@@ -67,6 +68,63 @@ router.patch('/profile', authenticate, UserController.updateProfile);
  *         description: Success
  */
 router.get('/students', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.getStudents);
+router.post('/users/batch', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.batchCreateStudents);
+/**
+ * @openapi
+ * /users:
+ *   get:
+ *     summary: List all users globally
+ *     tags: [Users]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Success
+ *   post:
+ *     summary: Create a user manually
+ *     tags: [Users]
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               email: { type: string }
+ *               role: { type: string }
+ *               orgId: { type: string }
+ *     responses:
+ *       201:
+ *         description: Created
+ */
+router.get('/users', authenticate, authorize(['SUPERADMIN']), UserController.getAllUsers);
+router.post('/users', authenticate, authorize(['SUPERADMIN', 'ADMIN']), UserController.createUser);
+/**
+ * @openapi
+ * /users/{id}:
+ *   patch:
+ *     summary: Update a user's details, role, or status
+ *     tags: [Users]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               status: { type: string }
+ *               role: { type: string }
+ *     responses:
+ *       200:
+ *         description: Updated
+ */
+router.patch('/users/:id', authenticate, authorize(['SUPERADMIN', 'ADMIN']), UserController.updateUser);
 /**
  * @openapi
  * /stats:

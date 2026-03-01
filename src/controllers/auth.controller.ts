@@ -28,6 +28,19 @@ export class AuthController {
     }
   }
 
+  static async setupPassword(req: Request, res: Response) {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+      const result = await AuthService.setupPassword(validatedData);
+      res.json({ data: result });
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ error: { message: 'Validation failed', details: error.errors } });
+      }
+      res.status(400).json({ error: { message: error.message } });
+    }
+  }
+
   static async login(req: Request, res: Response) {
     try {
       const validatedData = loginSchema.parse(req.body);

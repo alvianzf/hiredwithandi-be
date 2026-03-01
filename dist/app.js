@@ -17,6 +17,15 @@ app.use('/api/jobs', jobRoutes);
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+// 404 Catch-All
+app.use('*', (req, res) => {
+    res.status(404).json({
+        error: {
+            message: 'Looks like this endpoint ghosted you! 👻 (404 Not Found)',
+            status: 404
+        }
+    });
+});
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error(err.stack);

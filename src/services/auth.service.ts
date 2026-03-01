@@ -7,7 +7,10 @@ export class AuthService {
     const user = await prisma.user.findUnique({
       where: { email }
     });
-    return { exists: !!user };
+    return {
+      exists: !!user,
+      hasPassword: !!user?.passwordHash
+    };
   }
 
   static async register(data: any) {
@@ -32,6 +35,30 @@ export class AuthService {
     });
   }
 
+  static async setupPassword(data: any) {
+    const user = await prisma.user.findUnique({
+      where: { email: data.email }
+    });
+
+    if (!user || user.status === 'DISABLED') {
+      throw new Error('User not found or disabled');
+    }
+
+    if (user.passwordHash) {
+      throw new Error('User already has a password');
+    }
+
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: hashedPassword }
+    });
+
+    // Auto-login after generating password
+    return this.login(data);
+  }
+
   static async login(data: any) {
     const user = await prisma.user.findUnique({
       where: { email: data.email }
@@ -41,10 +68,25 @@ export class AuthService {
       throw new Error('Invalid credentials or account disabled');
     }
 
+    if (!user.passwordHash) {
+      throw new Error('Account has no password. Please set one up first.');
+    }
+
+    // Role-based login constraints
+    // If logging into job-tracker (determined contextually or by a flag), block org admins unless they are assigned
+    if (data.app === 'job-tracker' && user.role === 'ADMIN') {
+      throw new Error('Organization Admins cannot log into the applicant tracker directly.');
+    }
+
     const isMatch = await bcrypt.compare(data.password, user.passwordHash);
     if (!isMatch) {
       throw new Error('Invalid credentials');
     }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date() }
+    });
 
     const token = jwt.sign(
       { id: user.id, role: user.role, orgId: user.orgId },

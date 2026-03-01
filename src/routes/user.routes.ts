@@ -72,7 +72,7 @@ router.patch('/profile', authenticate, UserController.updateProfile);
  *         description: Success
  */
 router.get('/students', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.getStudents);
-router.post('/users/batch', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.batchCreateStudents);
+router.post('/batch-students', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.batchCreateStudents);
 
 /**
  * @openapi

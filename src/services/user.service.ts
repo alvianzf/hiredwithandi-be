@@ -114,12 +114,10 @@ export class UserService {
   }
 
   static async createUser(data: any) {
-    const passwordHash = await bcrypt.hash(data.password || 'User#123', 10);
     return prisma.user.create({
       data: {
-        name: data.name,
+        name: data.name || data.email.split('@')[0],
         email: data.email,
-        passwordHash,
         role: data.role,
         orgId: data.orgId,
         status: data.status,
@@ -134,15 +132,10 @@ export class UserService {
     });
   }
 
-  static async batchCreateStudents(orgId: string, students: { name: string; email: string; }[]) {
-    // Note: Prisma createMany doesn't return the created records, and we need password hashes.
-    // For simplicity & safety, we'll hash the default password once.
-    const defaultPasswordHash = await bcrypt.hash('User#123', 10);
-
+  static async batchCreateStudents(orgId: string, students: { name?: string; email: string; }[]) {
     const records = students.map(s => ({
-      name: s.name,
+      name: s.name || s.email.split('@')[0],
       email: s.email,
-      passwordHash: defaultPasswordHash,
       orgId,
       role: 'STUDENT' as const,
       status: 'ACTIVE' as const,

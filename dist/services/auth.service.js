@@ -6,7 +6,10 @@ export class AuthService {
         const user = await prisma.user.findUnique({
             where: { email }
         });
-        return { exists: !!user };
+        return {
+            exists: !!user,
+            hasPassword: !!user?.passwordHash
+        };
     }
     static async register(data) {
         const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -28,6 +31,24 @@ export class AuthService {
             }
         });
     }
+    static async setupPassword(data) {
+        const user = await prisma.user.findUnique({
+            where: { email: data.email }
+        });
+        if (!user || user.status === 'DISABLED') {
+            throw new Error('User not found or disabled');
+        }
+        if (user.passwordHash) {
+            throw new Error('User already has a password');
+        }
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { passwordHash: hashedPassword }
+        });
+        // Auto-login after generating password
+        return this.login(data);
+    }
     static async login(data) {
         const user = await prisma.user.findUnique({
             where: { email: data.email }
@@ -35,13 +56,27 @@ export class AuthService {
         if (!user || user.status === 'DISABLED') {
             throw new Error('Invalid credentials or account disabled');
         }
+        if (!user.passwordHash) {
+            throw new Error('Account has no password. Please set one up first.');
+        }
+        // Role-based login constraints
+        // If logging into job-tracker (determined contextually or by a flag), block org admins unless they are assigned
+        if (data.app === 'job-tracker' && user.role === 'ADMIN') {
+            throw new Error('Organization Admins cannot log into the applicant tracker directly.');
+        }
         const isMatch = await bcrypt.compare(data.password, user.passwordHash);
         if (!isMatch) {
             throw new Error('Invalid credentials');
         }
-        const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLogin: new Date() }
+        });
+        const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'), { expiresIn: '7d' });
         return {
             token,
+            refreshToken,
             user: {
                 id: user.id,
                 email: user.email,
@@ -50,6 +85,33 @@ export class AuthService {
                 orgId: user.orgId
             }
         };
+    }
+    static async refresh(refreshToken) {
+        try {
+            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'));
+            const user = await prisma.user.findUnique({
+                where: { id: decoded.id }
+            });
+            if (!user || user.status === 'DISABLED') {
+                throw new Error('User not found or disabled');
+            }
+            const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+            const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'), { expiresIn: '7d' });
+            return {
+                token,
+                refreshToken: newRefreshToken,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    role: user.role,
+                    orgId: user.orgId
+                }
+            };
+        }
+        catch (e) {
+            throw new Error('Invalid refresh token');
+        }
     }
 }
 //# sourceMappingURL=auth.service.js.map

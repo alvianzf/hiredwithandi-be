@@ -51,6 +51,30 @@ router.post('/register', AuthController.register);
 
 /**
  * @openapi
+ * /auth/setup-password:
+ *   post:
+ *     summary: Sets a password for a pre-created account and logs the user in
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email: { type: string }
+ *               password: { type: string }
+ *     responses:
+ *       200:
+ *         description: Password successfully set and logged in
+ *       400:
+ *         description: Invalid request or user already has password
+ */
+router.post('/setup-password', AuthController.setupPassword);
+
+/**
+ * @openapi
  * /auth/login:
  *   post:
  *     summary: User login

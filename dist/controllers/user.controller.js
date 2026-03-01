@@ -1,5 +1,5 @@
 import { OrganizationService, UserService } from '../services/user.service.js';
-import { organizationSchema, profileUpdateSchema } from '../validators/user.validator.js';
+import { organizationSchema, organizationUpdateSchema, profileUpdateSchema, userCreateSchema, userUpdateSchema, batchStudentSchema } from '../validators/user.validator.js';
 export class OrganizationController {
     static async getAll(req, res) {
         try {
@@ -15,6 +15,16 @@ export class OrganizationController {
             const validatedData = organizationSchema.parse(req.body);
             const org = await OrganizationService.create(validatedData);
             res.status(201).json({ data: org });
+        }
+        catch (error) {
+            res.status(400).json({ error: { message: error.message } });
+        }
+    }
+    static async update(req, res) {
+        try {
+            const validatedData = organizationUpdateSchema.parse(req.body);
+            const org = await OrganizationService.update(req.params.id, validatedData);
+            res.json({ data: org });
         }
         catch (error) {
             res.status(400).json({ error: { message: error.message } });
@@ -58,6 +68,53 @@ export class UserController {
             const validatedData = profileUpdateSchema.parse(req.body);
             const profile = await UserService.updateProfile(req.user.id, validatedData);
             res.json({ data: profile });
+        }
+        catch (error) {
+            res.status(400).json({ error: { message: error.message } });
+        }
+    }
+    static async getAllUsers(req, res) {
+        try {
+            const users = await UserService.getAll();
+            res.json({ data: users });
+        }
+        catch (error) {
+            res.status(500).json({ error: { message: error.message } });
+        }
+    }
+    static async createUser(req, res) {
+        try {
+            const validatedData = userCreateSchema.parse(req.body);
+            const user = await UserService.createUser(validatedData);
+            res.status(201).json({ data: user });
+        }
+        catch (error) {
+            res.status(400).json({ error: { message: error.message } });
+        }
+    }
+    static async updateUser(req, res) {
+        try {
+            const validatedData = userUpdateSchema.parse(req.body);
+            const user = await UserService.updateUser(req.params.id, validatedData);
+            res.json({ data: user });
+        }
+        catch (error) {
+            res.status(400).json({ error: { message: error.message } });
+        }
+    }
+    static async batchCreateStudents(req, res) {
+        try {
+            const orgId = req.user?.orgId;
+            if (!orgId && req.user?.role !== 'SUPERADMIN') {
+                return res.status(403).json({ error: { message: 'Organization ID missing' } });
+            }
+            const targetOrgId = req.body.orgId || orgId;
+            if (!targetOrgId) {
+                return res.status(400).json({ error: { message: 'orgId is required' } });
+            }
+            const validatedData = batchStudentSchema.parse(req.body.students);
+            const result = await UserService.batchCreateStudents(targetOrgId, validatedData);
+            res.status(201).json({ data: result });
         }
         catch (error) {
             res.status(400).json({ error: { message: error.message } });

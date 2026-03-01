@@ -19,6 +19,12 @@ export class OrganizationService {
             include: { users: true }
         });
     }
+    static async update(id, data) {
+        return prisma.organization.update({
+            where: { id },
+            data
+        });
+    }
 }
 export class UserService {
     static async getStudentsByOrg(orgId) {
@@ -83,6 +89,46 @@ export class UserService {
                 linkedIn: true,
                 avatarUrl: true
             }
+        });
+    }
+    static async getAll() {
+        return prisma.user.findMany({
+            include: {
+                organization: {
+                    select: { name: true }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
+    static async createUser(data) {
+        return prisma.user.create({
+            data: {
+                name: data.name || data.email.split('@')[0],
+                email: data.email,
+                role: data.role,
+                orgId: data.orgId,
+                status: data.status,
+            }
+        });
+    }
+    static async updateUser(id, data) {
+        return prisma.user.update({
+            where: { id },
+            data
+        });
+    }
+    static async batchCreateStudents(orgId, students) {
+        const records = students.map(s => ({
+            name: s.name || s.email.split('@')[0],
+            email: s.email,
+            orgId,
+            role: 'STUDENT',
+            status: 'ACTIVE',
+        }));
+        return prisma.user.createMany({
+            data: records,
+            skipDuplicates: true // Skip if email already exists
         });
     }
 }

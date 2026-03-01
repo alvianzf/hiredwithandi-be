@@ -21,7 +21,7 @@ export declare class OrganizationService {
         users: {
             id: string;
             email: string;
-            passwordHash: string;
+            passwordHash: string | null;
             name: string;
             role: import(".prisma/client").$Enums.Role;
             status: import(".prisma/client").$Enums.UserStatus;
@@ -30,6 +30,7 @@ export declare class OrganizationService {
             location: string | null;
             linkedIn: string | null;
             avatarUrl: string | null;
+            lastLogin: Date | null;
             createdAt: Date;
             updatedAt: Date;
         }[];
@@ -39,6 +40,14 @@ export declare class OrganizationService {
         createdAt: Date;
         updatedAt: Date;
     }) | null>;
+    static update(id: string, data: {
+        name?: string;
+    }): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
 }
 export declare class UserService {
     static getStudentsByOrg(orgId: string): Promise<{
@@ -74,4 +83,60 @@ export declare class UserService {
         linkedIn: string | null;
         avatarUrl: string | null;
     }>;
+    static getAll(): Promise<({
+        organization: {
+            name: string;
+        } | null;
+    } & {
+        id: string;
+        email: string;
+        passwordHash: string | null;
+        name: string;
+        role: import(".prisma/client").$Enums.Role;
+        status: import(".prisma/client").$Enums.UserStatus;
+        orgId: string | null;
+        bio: string | null;
+        location: string | null;
+        linkedIn: string | null;
+        avatarUrl: string | null;
+        lastLogin: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
+    static createUser(data: any): Promise<{
+        id: string;
+        email: string;
+        passwordHash: string | null;
+        name: string;
+        role: import(".prisma/client").$Enums.Role;
+        status: import(".prisma/client").$Enums.UserStatus;
+        orgId: string | null;
+        bio: string | null;
+        location: string | null;
+        linkedIn: string | null;
+        avatarUrl: string | null;
+        lastLogin: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    static updateUser(id: string, data: any): Promise<{
+        id: string;
+        email: string;
+        passwordHash: string | null;
+        name: string;
+        role: import(".prisma/client").$Enums.Role;
+        status: import(".prisma/client").$Enums.UserStatus;
+        orgId: string | null;
+        bio: string | null;
+        location: string | null;
+        linkedIn: string | null;
+        avatarUrl: string | null;
+        lastLogin: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    static batchCreateStudents(orgId: string, students: {
+        name?: string;
+        email: string;
+    }[]): Promise<import(".prisma/client").Prisma.BatchPayload>;
 }

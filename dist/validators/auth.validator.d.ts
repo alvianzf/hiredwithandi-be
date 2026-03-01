@@ -35,3 +35,10 @@ export declare const checkEmailSchema: z.ZodObject<{
 }, {
     email: string;
 }>;
+export declare const refreshTokenSchema: z.ZodObject<{
+    refreshToken: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    refreshToken: string;
+}, {
+    refreshToken: string;
+}>;
