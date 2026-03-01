@@ -21,4 +21,15 @@ export class AnalyticsController {
       res.status(500).json({ error: { message: error.message } });
     }
   }
+
+  static async getStudentStats(req: AuthRequest, res: Response) {
+    try {
+      const id = req.params['id'] as string;
+      // Re-use getUserStats since it relies on just a userId
+      const stats = await AnalyticsService.getUserStats(id);
+      res.json({ data: stats });
+    } catch (error: any) {
+      res.status(500).json({ error: { message: error.message } });
+    }
+  }
 }

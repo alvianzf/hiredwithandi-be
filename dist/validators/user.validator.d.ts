@@ -40,10 +40,13 @@ export declare const profileUpdateSchema: z.ZodObject<{
 }>;
 export declare const organizationUpdateSchema: z.ZodObject<{
     name: z.ZodOptional<z.ZodString>;
+    status: z.ZodOptional<z.ZodEnum<["ACTIVE", "DISABLED"]>>;
 }, "strip", z.ZodTypeAny, {
     name?: string | undefined;
+    status?: "ACTIVE" | "DISABLED" | undefined;
 }, {
     name?: string | undefined;
+    status?: "ACTIVE" | "DISABLED" | undefined;
 }>;
 export declare const userCreateSchema: z.ZodObject<{
     name: z.ZodString;

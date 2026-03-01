@@ -6,6 +6,7 @@ export declare class OrganizationService {
     } & {
         id: string;
         name: string;
+        status: import(".prisma/client").$Enums.OrganizationStatus;
         createdAt: Date;
         updatedAt: Date;
     })[]>;
@@ -14,6 +15,7 @@ export declare class OrganizationService {
     }): Promise<{
         id: string;
         name: string;
+        status: import(".prisma/client").$Enums.OrganizationStatus;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -37,14 +39,24 @@ export declare class OrganizationService {
     } & {
         id: string;
         name: string;
+        status: import(".prisma/client").$Enums.OrganizationStatus;
         createdAt: Date;
         updatedAt: Date;
     }) | null>;
     static update(id: string, data: {
         name?: string;
+        status?: 'ACTIVE' | 'DISABLED';
     }): Promise<{
         id: string;
         name: string;
+        status: import(".prisma/client").$Enums.OrganizationStatus;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    static delete(id: string): Promise<{
+        id: string;
+        name: string;
+        status: import(".prisma/client").$Enums.OrganizationStatus;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -55,6 +67,7 @@ export declare class UserService {
         email: string;
         name: string;
         status: import(".prisma/client").$Enums.UserStatus;
+        lastLogin: Date | null;
         createdAt: Date;
     }[]>;
     static getSuperadminStats(): Promise<{

@@ -2,12 +2,12 @@ import { z } from 'zod';
 export declare const jobSchema: z.ZodObject<{
     company: z.ZodString;
     position: z.ZodString;
-    url: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+    url: z.ZodNullable<z.ZodOptional<z.ZodUnion<[z.ZodString, z.ZodLiteral<"">]>>>;
     salary: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     notes: z.ZodNullable<z.ZodOptional<z.ZodString>>;
-    workType: z.ZodDefault<z.ZodEnum<["REMOTE", "ONSITE", "HYBRID"]>>;
+    workType: z.ZodEffects<z.ZodDefault<z.ZodEnum<["REMOTE", "ONSITE", "HYBRID"]>>, "REMOTE" | "ONSITE" | "HYBRID", unknown>;
     location: z.ZodNullable<z.ZodOptional<z.ZodString>>;
-    jobFitPercentage: z.ZodDefault<z.ZodNumber>;
+    jobFitPercentage: z.ZodEffects<z.ZodDefault<z.ZodNumber>, number, unknown>;
     status: z.ZodDefault<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     status: string;
@@ -27,8 +27,8 @@ export declare const jobSchema: z.ZodObject<{
     url?: string | null | undefined;
     salary?: string | null | undefined;
     notes?: string | null | undefined;
-    workType?: "REMOTE" | "ONSITE" | "HYBRID" | undefined;
-    jobFitPercentage?: number | undefined;
+    workType?: unknown;
+    jobFitPercentage?: unknown;
 }>;
 export declare const updateJobStatusSchema: z.ZodObject<{
     status: z.ZodString;
@@ -43,12 +43,12 @@ export declare const updateJobStatusSchema: z.ZodObject<{
 export declare const updateJobDetailsSchema: z.ZodObject<{
     company: z.ZodOptional<z.ZodString>;
     position: z.ZodOptional<z.ZodString>;
-    url: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+    url: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodUnion<[z.ZodString, z.ZodLiteral<"">]>>>>;
     salary: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
     notes: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
-    workType: z.ZodOptional<z.ZodDefault<z.ZodEnum<["REMOTE", "ONSITE", "HYBRID"]>>>;
+    workType: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodEnum<["REMOTE", "ONSITE", "HYBRID"]>>, "REMOTE" | "ONSITE" | "HYBRID", unknown>>;
     location: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
-    jobFitPercentage: z.ZodOptional<z.ZodDefault<z.ZodNumber>>;
+    jobFitPercentage: z.ZodOptional<z.ZodEffects<z.ZodDefault<z.ZodNumber>, number, unknown>>;
     status: z.ZodOptional<z.ZodDefault<z.ZodString>>;
 } & {
     finalOffer: z.ZodNullable<z.ZodOptional<z.ZodString>>;
@@ -75,9 +75,9 @@ export declare const updateJobDetailsSchema: z.ZodObject<{
     url?: string | null | undefined;
     salary?: string | null | undefined;
     notes?: string | null | undefined;
-    workType?: "REMOTE" | "ONSITE" | "HYBRID" | undefined;
+    workType?: unknown;
     finalOffer?: string | null | undefined;
     benefits?: string | null | undefined;
     nonMonetaryBenefits?: string | null | undefined;
-    jobFitPercentage?: number | undefined;
+    jobFitPercentage?: unknown;
 }>;

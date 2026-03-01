@@ -30,6 +30,15 @@ export class OrganizationController {
             res.status(400).json({ error: { message: error.message } });
         }
     }
+    static async delete(req, res) {
+        try {
+            await OrganizationService.delete(req.params.id);
+            res.json({ message: 'Organization deleted successfully' });
+        }
+        catch (error) {
+            res.status(400).json({ error: { message: error.message } });
+        }
+    }
 }
 export class UserController {
     static async getStudents(req, res) {

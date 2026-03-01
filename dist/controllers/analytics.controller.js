@@ -19,5 +19,16 @@ export class AnalyticsController {
             res.status(500).json({ error: { message: error.message } });
         }
     }
+    static async getStudentStats(req, res) {
+        try {
+            const id = req.params['id'];
+            // Re-use getUserStats since it relies on just a userId
+            const stats = await AnalyticsService.getUserStats(id);
+            res.json({ data: stats });
+        }
+        catch (error) {
+            res.status(500).json({ error: { message: error.message } });
+        }
+    }
 }
 //# sourceMappingURL=analytics.controller.js.map

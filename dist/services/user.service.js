@@ -11,6 +11,10 @@ export class OrganizationService {
         });
     }
     static async create(data) {
+        const existing = await prisma.organization.findUnique({ where: { name: data.name } });
+        if (existing) {
+            throw new Error(`Organization '${data.name}' already exists.`);
+        }
         return prisma.organization.create({ data });
     }
     static async getById(id) {
@@ -25,6 +29,11 @@ export class OrganizationService {
             data
         });
     }
+    static async delete(id) {
+        return prisma.organization.delete({
+            where: { id }
+        });
+    }
 }
 export class UserService {
     static async getStudentsByOrg(orgId) {
@@ -35,8 +44,10 @@ export class UserService {
                 email: true,
                 name: true,
                 status: true,
+                lastLogin: true,
                 createdAt: true
-            }
+            },
+            orderBy: { createdAt: 'desc' }
         });
     }
     static async getSuperadminStats() {

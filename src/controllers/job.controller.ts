@@ -6,7 +6,11 @@ import { AuthRequest } from '../middlewares/auth.middleware.js';
 export class JobController {
   static async getAll(req: AuthRequest, res: Response) {
     try {
-      const jobs = await JobService.getUserJobs(req.user!.id);
+      let targetUserId = req.user!.id;
+      if (req.query.userId && (req.user!.role === 'ADMIN' || req.user!.role === 'SUPERADMIN')) {
+        targetUserId = req.query.userId as string;
+      }
+      const jobs = await JobService.getUserJobs(targetUserId);
       res.json({ data: jobs });
     } catch (error: any) {
       res.status(500).json({ error: { message: error.message } });

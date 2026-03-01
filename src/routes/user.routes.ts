@@ -200,4 +200,22 @@ router.get('/stats', authenticate, authorize(['SUPERADMIN']), UserController.get
  */
 router.get('/organizations/:id/stats', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getOrgStats);
 
+/**
+ * @openapi
+ * /students/{id}/stats:
+ *   get:
+ *     summary: Get a specific student's job statistics
+ *     tags: [Analytics]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.get('/students/:id/stats', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getStudentStats);
+
 export default router;
