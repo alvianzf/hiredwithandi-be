@@ -91,7 +91,7 @@ export class AuthService {
     const token = jwt.sign(
       { id: user.id, role: user.role, orgId: user.orgId },
       process.env.JWT_SECRET!,
-      { expiresIn: '15m' }
+      { expiresIn: '1d' }
     );
 
     const refreshToken = jwt.sign(
@@ -130,7 +130,7 @@ export class AuthService {
       const token = jwt.sign(
         { id: user.id, role: user.role, orgId: user.orgId },
         process.env.JWT_SECRET!,
-        { expiresIn: '15m' }
+        { expiresIn: '1d' }
       );
 
       const newRefreshToken = jwt.sign(
