@@ -35,7 +35,6 @@ export class AnalyticsController {
     static async getStudentDashboard(req, res) {
         try {
             const { id } = req.params;
-            console.log(`DASHBOARD_HIT: ${id}`);
             // 1. Fetch student profile and verify access
             // Using UserService for consistency and to ensure all fields are included
             const student = await UserService.getProfile(id);

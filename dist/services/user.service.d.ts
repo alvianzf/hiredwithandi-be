@@ -32,9 +32,9 @@ export declare class OrganizationService {
             location: string | null;
             linkedIn: string | null;
             avatarUrl: string | null;
-            lastLogin: Date | null;
             createdAt: Date;
             updatedAt: Date;
+            lastLogin: Date | null;
         }[];
     } & {
         id: string;
@@ -67,8 +67,8 @@ export declare class UserService {
         email: string;
         name: string;
         status: import(".prisma/client").$Enums.UserStatus;
-        lastLogin: Date | null;
         createdAt: Date;
+        lastLogin: Date | null;
     }[]>;
     static getSuperadminStats(): Promise<{
         totalOrganizations: number;
@@ -112,9 +112,9 @@ export declare class UserService {
         location: string | null;
         linkedIn: string | null;
         avatarUrl: string | null;
-        lastLogin: Date | null;
         createdAt: Date;
         updatedAt: Date;
+        lastLogin: Date | null;
     })[]>;
     static createUser(data: any): Promise<{
         id: string;
@@ -128,9 +128,9 @@ export declare class UserService {
         location: string | null;
         linkedIn: string | null;
         avatarUrl: string | null;
-        lastLogin: Date | null;
         createdAt: Date;
         updatedAt: Date;
+        lastLogin: Date | null;
     }>;
     static updateUser(id: string, data: any): Promise<{
         id: string;
@@ -144,9 +144,9 @@ export declare class UserService {
         location: string | null;
         linkedIn: string | null;
         avatarUrl: string | null;
-        lastLogin: Date | null;
         createdAt: Date;
         updatedAt: Date;
+        lastLogin: Date | null;
     }>;
     static batchCreateStudents(orgId: string, students: {
         name?: string;
