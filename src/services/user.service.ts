@@ -86,7 +86,7 @@ export class UserService {
     if (!user) return null;
     return {
       ...user,
-      organization: user.organization?.name || ''
+      organization: user.organization || null
     };
   }
 

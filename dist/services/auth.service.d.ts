@@ -20,7 +20,9 @@ export declare class AuthService {
             name: string;
             role: import(".prisma/client").$Enums.Role;
             orgId: string | null;
-            organization: string | null;
+            organization: {
+                name: string;
+            } | null;
         };
     }>;
     static login(data: any): Promise<{
@@ -32,7 +34,9 @@ export declare class AuthService {
             name: string;
             role: import(".prisma/client").$Enums.Role;
             orgId: string | null;
-            organization: string | null;
+            organization: {
+                name: string;
+            } | null;
         };
     }>;
     static refresh(refreshToken: string): Promise<{
@@ -44,7 +48,9 @@ export declare class AuthService {
             name: string;
             role: import(".prisma/client").$Enums.Role;
             orgId: string | null;
-            organization: string | null;
+            organization: {
+                name: string;
+            } | null;
         };
     }>;
     static changePassword(userId: string, data: any): Promise<{

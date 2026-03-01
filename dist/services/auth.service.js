@@ -83,7 +83,7 @@ export class AuthService {
                 name: user.name,
                 role: user.role,
                 orgId: user.orgId,
-                organization: user.organization?.name || null
+                organization: user.organization || null
             }
         };
     }
@@ -108,7 +108,7 @@ export class AuthService {
                     name: user.name,
                     role: user.role,
                     orgId: user.orgId,
-                    organization: user.organization?.name || null
+                    organization: user.organization || null
                 }
             };
         }

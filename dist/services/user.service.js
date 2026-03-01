@@ -78,7 +78,7 @@ export class UserService {
             return null;
         return {
             ...user,
-            organization: user.organization?.name || ''
+            organization: user.organization || null
         };
     }
     static async updateProfile(userId, data, file) {
