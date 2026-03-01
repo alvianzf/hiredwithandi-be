@@ -1,5 +1,5 @@
 import prisma from '../config/prisma.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 export class AuthService {
     static async checkEmail(email) {
@@ -72,7 +72,7 @@ export class AuthService {
             where: { id: user.id },
             data: { lastLogin: new Date() }
         });
-        const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '1d' });
         const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'), { expiresIn: '7d' });
         return {
             token,
@@ -95,7 +95,7 @@ export class AuthService {
             if (!user || user.status === 'DISABLED') {
                 throw new Error('User not found or disabled');
             }
-            const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+            const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '1d' });
             const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'), { expiresIn: '7d' });
             return {
                 token,

@@ -67,12 +67,17 @@ export class AuthController {
         }
     }
     static async changePassword(req, res) {
+        console.log('[AuthController] changePassword request received');
+        console.log('[AuthController] User ID from token:', req.user?.id);
         try {
             const validatedData = changePasswordSchema.parse(req.body);
+            console.log('[AuthController] Data validated successfully');
             const result = await AuthService.changePassword(req.user.id, validatedData);
+            console.log('[AuthController] AuthService returned success');
             res.json({ data: result });
         }
         catch (error) {
+            console.log('[AuthController] Error in changePassword:', error.message);
             if (error.name === 'ZodError') {
                 return res.status(400).json({ error: { message: 'Validation failed', details: error.errors } });
             }
