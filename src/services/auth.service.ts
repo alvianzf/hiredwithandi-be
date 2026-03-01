@@ -154,4 +154,32 @@ export class AuthService {
       throw new Error('Invalid refresh token');
     }
   }
+
+  static async changePassword(userId: string, data: any) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user || user.status === 'DISABLED') {
+      throw new Error('User not found or disabled');
+    }
+
+    if (!user.passwordHash) {
+      throw new Error('Account has no password. Please set one up first.');
+    }
+
+    const isMatch = await bcrypt.compare(data.currentPassword, user.passwordHash);
+    if (!isMatch) {
+      throw new Error('Current password is incorrect');
+    }
+
+    const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: hashedPassword }
+    });
+
+    return { message: 'Password changed successfully' };
+  }
 }

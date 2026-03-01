@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller.js';
+import { authenticate } from '../middlewares/auth.middleware.js';
 const router = Router();
 /**
  * @openapi
@@ -109,5 +110,28 @@ router.post('/login', AuthController.login);
  *         description: Token refreshed
  */
 router.post('/refresh', AuthController.refresh);
+/**
+ * @openapi
+ * /auth/change-password:
+ *   post:
+ *     summary: Change user password
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [currentPassword, newPassword]
+ *             properties:
+ *               currentPassword: { type: string }
+ *               newPassword: { type: string, minLength: 6 }
+ *     responses:
+ *       200:
+ *         description: Password changed
+ */
+router.post('/change-password', authenticate, AuthController.changePassword);
 export default router;
 //# sourceMappingURL=auth.routes.js.map

@@ -42,3 +42,13 @@ export declare const refreshTokenSchema: z.ZodObject<{
 }, {
     refreshToken: string;
 }>;
+export declare const changePasswordSchema: z.ZodObject<{
+    currentPassword: z.ZodString;
+    newPassword: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    currentPassword: string;
+    newPassword: string;
+}, {
+    currentPassword: string;
+    newPassword: string;
+}>;

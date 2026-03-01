@@ -20,3 +20,8 @@ export const checkEmailSchema = z.object({
 export const refreshTokenSchema = z.object({
   refreshToken: z.string()
 });
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string(),
+  newPassword: z.string().min(6)
+});

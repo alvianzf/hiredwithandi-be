@@ -44,4 +44,7 @@ export declare class AuthService {
             orgId: string | null;
         };
     }>;
+    static changePassword(userId: string, data: any): Promise<{
+        message: string;
+    }>;
 }
