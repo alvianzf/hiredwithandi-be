@@ -4,7 +4,7 @@ export class OrganizationService {
         return prisma.organization.findMany({
             include: {
                 _count: {
-                    select: { users: { where: { role: 'STUDENT' } } }
+                    select: { users: { where: { role: 'MEMBER' } } }
                 }
             }
         });
@@ -35,9 +35,9 @@ export class OrganizationService {
     }
 }
 export class UserService {
-    static async getStudentsByOrg(orgId) {
+    static async getMembersByOrg(orgId) {
         return prisma.user.findMany({
-            where: { orgId, role: 'STUDENT' },
+            where: { orgId, role: 'MEMBER' },
             select: {
                 id: true,
                 email: true,
@@ -51,8 +51,8 @@ export class UserService {
     }
     static async getSuperadminStats() {
         const orgCount = await prisma.organization.count();
-        const userCount = await prisma.user.count({ where: { role: 'STUDENT' } });
-        return { totalOrganizations: orgCount, totalStudents: userCount };
+        const userCount = await prisma.user.count({ where: { role: 'MEMBER' } });
+        return { totalOrganizations: orgCount, totalMembers: userCount };
     }
     static async getProfile(userId) {
         const user = await prisma.user.findUnique({
@@ -81,38 +81,54 @@ export class UserService {
             organization: user.organization?.name || ''
         };
     }
-    static async updateProfile(userId, data) {
+    static async updateProfile(userId, data, file) {
         let updateData = { ...data };
-        // If avatarUrl is a Base64 string, save to local disk
-        if (data.avatarUrl && data.avatarUrl.startsWith('data:image')) {
+        // If a file is provided via multipart/form-data, save to local disk
+        if (file) {
             try {
                 const fs = await import('fs/promises');
                 const path = await import('path');
-                const base64Data = data.avatarUrl.replace(/^data:image\/\w+;base64,/, "");
-                const extension = data.avatarUrl.split(';')[0].split('/')[1];
+                // Extract extension from mimetype (e.g. image/jpeg -> jpeg)
+                const extension = file.mimetype.split('/')[1] || 'jpg';
                 const fileName = `${userId}-${Date.now()}.${extension}`;
                 const relativePath = `uploads/avatars/${fileName}`;
                 const absolutePath = path.join(process.cwd(), 'public', relativePath);
-                await fs.writeFile(absolutePath, base64Data, 'base64');
+                // Ensure the directory exists
+                const dir = path.dirname(absolutePath);
+                await fs.mkdir(dir, { recursive: true });
+                // Save the buffer to disk
+                await fs.writeFile(absolutePath, file.buffer);
                 updateData.avatarUrl = `/${relativePath}`;
             }
             catch (error) {
                 throw new Error(`Profile photo upload failed: ${error.message}`);
             }
         }
-        return prisma.user.update({
+        else if (data.avatarUrl === null) {
+            // Allow clearing the avatar explicitly
+            updateData.avatarUrl = null;
+        }
+        const user = await prisma.user.update({
             where: { id: userId },
             data: updateData,
             select: {
                 id: true,
                 email: true,
                 name: true,
+                role: true,
                 bio: true,
                 location: true,
                 linkedIn: true,
-                avatarUrl: true
+                avatarUrl: true,
+                organization: {
+                    select: { name: true }
+                }
             }
         });
+        return {
+            ...user,
+            organization: user.organization?.name || ''
+        };
     }
     static async getAll() {
         return prisma.user.findMany({
@@ -141,12 +157,12 @@ export class UserService {
             data
         });
     }
-    static async batchCreateStudents(orgId, students) {
-        const records = students.map(s => ({
+    static async batchCreateMembers(orgId, members) {
+        const records = members.map(s => ({
             name: s.name || s.email.split('@')[0],
             email: s.email,
             orgId,
-            role: 'STUDENT',
+            role: 'MEMBER',
             status: 'ACTIVE',
         }));
         return prisma.user.createMany({

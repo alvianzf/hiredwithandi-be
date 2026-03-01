@@ -51,7 +51,8 @@ export class AuthService {
     }
     static async login(data) {
         const user = await prisma.user.findUnique({
-            where: { email: data.email }
+            where: { email: data.email },
+            include: { organization: { select: { name: true } } }
         });
         if (!user || user.status === 'DISABLED') {
             throw new Error('Invalid credentials or account disabled');
@@ -60,7 +61,6 @@ export class AuthService {
             throw new Error('Account has no password. Please set one up first.');
         }
         // Role-based login constraints
-        // If logging into job-tracker (determined contextually or by a flag), block org admins unless they are assigned
         if (data.app === 'job-tracker' && user.role === 'ADMIN') {
             throw new Error('Organization Admins cannot log into the applicant tracker directly.');
         }
@@ -82,7 +82,8 @@ export class AuthService {
                 email: user.email,
                 name: user.name,
                 role: user.role,
-                orgId: user.orgId
+                orgId: user.orgId,
+                organization: user.organization?.name || null
             }
         };
     }
@@ -90,7 +91,8 @@ export class AuthService {
         try {
             const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'));
             const user = await prisma.user.findUnique({
-                where: { id: decoded.id }
+                where: { id: decoded.id },
+                include: { organization: { select: { name: true } } }
             });
             if (!user || user.status === 'DISABLED') {
                 throw new Error('User not found or disabled');
@@ -105,7 +107,8 @@ export class AuthService {
                     email: user.email,
                     name: user.name,
                     role: user.role,
-                    orgId: user.orgId
+                    orgId: user.orgId,
+                    organization: user.organization?.name || null
                 }
             };
         }

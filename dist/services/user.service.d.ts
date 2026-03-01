@@ -62,7 +62,7 @@ export declare class OrganizationService {
     }>;
 }
 export declare class UserService {
-    static getStudentsByOrg(orgId: string): Promise<{
+    static getMembersByOrg(orgId: string): Promise<{
         id: string;
         email: string;
         name: string;
@@ -72,7 +72,7 @@ export declare class UserService {
     }[]>;
     static getSuperadminStats(): Promise<{
         totalOrganizations: number;
-        totalStudents: number;
+        totalMembers: number;
     }>;
     static getProfile(userId: string): Promise<{
         organization: string;
@@ -88,10 +88,12 @@ export declare class UserService {
         avatarUrl: string | null;
         createdAt: Date;
     } | null>;
-    static updateProfile(userId: string, data: any): Promise<{
+    static updateProfile(userId: string, data: any, file?: Express.Multer.File): Promise<{
+        organization: string;
         id: string;
         email: string;
         name: string;
+        role: import(".prisma/client").$Enums.Role;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
@@ -149,7 +151,7 @@ export declare class UserService {
         updatedAt: Date;
         lastLogin: Date | null;
     }>;
-    static batchCreateStudents(orgId: string, students: {
+    static batchCreateMembers(orgId: string, members: {
         name?: string;
         email: string;
     }[]): Promise<import(".prisma/client").Prisma.BatchPayload>;

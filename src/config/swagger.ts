@@ -43,7 +43,7 @@ const options: swaggerJsdoc.Options = {
             id: { type: 'string', format: 'uuid' },
             email: { type: 'string' },
             name: { type: 'string' },
-            role: { type: 'string', enum: ['SUPERADMIN', 'ADMIN', 'STUDENT'] },
+            role: { type: 'string', enum: ['SUPERADMIN', 'ADMIN', 'MEMBER'] },
             orgId: { type: 'string', nullable: true },
           },
         },

@@ -166,7 +166,7 @@ export declare class AnalyticsService {
             jobsCount: string;
             averageDays: string;
         }[];
-        studentCount: number;
+        memberCount: number;
     }>;
     private static calculateStats;
     private static getEmptyStats;

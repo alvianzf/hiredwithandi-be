@@ -3,7 +3,7 @@ export const registerSchema = z.object({
     email: z.string().email(),
     password: z.string().min(6),
     name: z.string().min(2),
-    role: z.enum(['SUPERADMIN', 'ADMIN', 'STUDENT']).default('STUDENT'),
+    role: z.enum(['SUPERADMIN', 'ADMIN', 'MEMBER']).default('MEMBER'),
     orgId: z.string().optional()
 });
 export const loginSchema = z.object({

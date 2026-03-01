@@ -6,7 +6,7 @@ import {
   profileUpdateSchema,
   userCreateSchema,
   userUpdateSchema,
-  batchStudentSchema
+  batchMemberSchema
 } from '../validators/user.validator.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
 
@@ -51,30 +51,30 @@ export class OrganizationController {
 }
 
 export class UserController {
-  static async getStudents(req: AuthRequest, res: Response) {
+  static async getMembers(req: AuthRequest, res: Response) {
     try {
       const orgId = req.user?.orgId;
       if (!orgId && req.user?.role !== 'SUPERADMIN') {
         return res.status(403).json({ error: { message: 'Organization ID missing' } });
       }
 
-      const students = await UserService.getStudentsByOrg(orgId!);
-      res.json({ data: students });
+      const members = await UserService.getMembersByOrg(orgId!);
+      res.json({ data: members });
     } catch (error: any) {
       res.status(500).json({ error: { message: error.message } });
     }
   }
 
-  static async getStudentById(req: AuthRequest, res: Response) {
+  static async getMemberById(req: AuthRequest, res: Response) {
     try {
       const { id } = req.params;
-      const student = await UserService.getProfile(id as string);
+      const member = await UserService.getProfile(id as string);
 
-      if (!student || (req.user?.role !== 'SUPERADMIN' && student.orgId !== req.user?.orgId)) {
-        return res.status(404).json({ error: { message: 'Student not found or access denied' } });
+      if (!member || (req.user?.role !== 'SUPERADMIN' && member.orgId !== req.user?.orgId)) {
+        return res.status(404).json({ error: { message: 'Member not found or access denied' } });
       }
 
-      res.json({ data: student });
+      res.json({ data: member });
     } catch (error: any) {
       res.status(500).json({ error: { message: error.message } });
     }
@@ -101,7 +101,9 @@ export class UserController {
   static async updateProfile(req: AuthRequest, res: Response) {
     try {
       const validatedData = profileUpdateSchema.parse(req.body);
-      const profile = await UserService.updateProfile(req.user!.id, validatedData);
+      const file = req.file;
+
+      const profile = await UserService.updateProfile(req.user!.id, validatedData, file);
       res.json({ data: profile });
     } catch (error: any) {
       res.status(400).json({ error: { message: error.message } });
@@ -137,7 +139,7 @@ export class UserController {
     }
   }
 
-  static async batchCreateStudents(req: AuthRequest, res: Response) {
+  static async batchCreateMembers(req: AuthRequest, res: Response) {
     try {
       const orgId = req.user?.orgId;
       if (!orgId && req.user?.role !== 'SUPERADMIN') {
@@ -149,8 +151,8 @@ export class UserController {
         return res.status(400).json({ error: { message: 'orgId is required' } });
       }
 
-      const validatedData = batchStudentSchema.parse(req.body.students);
-      const result = await UserService.batchCreateStudents(targetOrgId, validatedData);
+      const validatedData = batchMemberSchema.parse(req.body.members);
+      const result = await UserService.batchCreateMembers(targetOrgId, validatedData);
       res.status(201).json({ data: result });
     } catch (error: any) {
       res.status(400).json({ error: { message: error.message } });

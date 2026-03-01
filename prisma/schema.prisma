@@ -54,7 +54,7 @@ model User {
   email        String        @unique
   passwordHash String?
   name         String
-  role         Role          @default(STUDENT)
+  role         Role          @default(MEMBER)
   status       UserStatus    @default(ACTIVE)
   orgId        String?
   bio          String?
@@ -76,7 +76,7 @@ enum OrganizationStatus {
 enum Role {
   SUPERADMIN
   ADMIN
-  STUDENT
+  MEMBER
 }
 
 enum UserStatus {

@@ -42,7 +42,7 @@ router.post('/check-email', AuthController.checkEmail);
  *               email: { type: string }
  *               password: { type: string }
  *               name: { type: string }
- *               role: { type: string, enum: [SUPERADMIN, ADMIN, STUDENT] }
+ *               role: { type: string, enum: [SUPERADMIN, ADMIN, MEMBER] }
  *               orgId: { type: string }
  *     responses:
  *       201:

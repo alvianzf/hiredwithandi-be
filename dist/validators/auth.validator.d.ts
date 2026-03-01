@@ -3,19 +3,19 @@ export declare const registerSchema: z.ZodObject<{
     email: z.ZodString;
     password: z.ZodString;
     name: z.ZodString;
-    role: z.ZodDefault<z.ZodEnum<["SUPERADMIN", "ADMIN", "STUDENT"]>>;
+    role: z.ZodDefault<z.ZodEnum<["SUPERADMIN", "ADMIN", "MEMBER"]>>;
     orgId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     email: string;
     name: string;
-    role: "SUPERADMIN" | "ADMIN" | "STUDENT";
+    role: "SUPERADMIN" | "ADMIN" | "MEMBER";
     password: string;
     orgId?: string | undefined;
 }, {
     email: string;
     name: string;
     password: string;
-    role?: "SUPERADMIN" | "ADMIN" | "STUDENT" | undefined;
+    role?: "SUPERADMIN" | "ADMIN" | "MEMBER" | undefined;
     orgId?: string | undefined;
 }>;
 export declare const loginSchema: z.ZodObject<{

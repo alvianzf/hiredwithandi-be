@@ -6,7 +6,7 @@ export declare const organizationSchema: z.ZodObject<{
 }, {
     name: string;
 }>;
-export declare const studentSchema: z.ZodObject<{
+export declare const memberSchema: z.ZodObject<{
     email: z.ZodString;
     name: z.ZodString;
     orgId: z.ZodString;
@@ -51,42 +51,42 @@ export declare const organizationUpdateSchema: z.ZodObject<{
 export declare const userCreateSchema: z.ZodObject<{
     name: z.ZodString;
     email: z.ZodString;
-    role: z.ZodEnum<["SUPERADMIN", "ADMIN", "STUDENT"]>;
+    role: z.ZodEnum<["SUPERADMIN", "ADMIN", "MEMBER"]>;
     orgId: z.ZodOptional<z.ZodString>;
     password: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     email: string;
     name: string;
-    role: "SUPERADMIN" | "ADMIN" | "STUDENT";
+    role: "SUPERADMIN" | "ADMIN" | "MEMBER";
     orgId?: string | undefined;
     password?: string | undefined;
 }, {
     email: string;
     name: string;
-    role: "SUPERADMIN" | "ADMIN" | "STUDENT";
+    role: "SUPERADMIN" | "ADMIN" | "MEMBER";
     orgId?: string | undefined;
     password?: string | undefined;
 }>;
 export declare const userUpdateSchema: z.ZodObject<{
     name: z.ZodOptional<z.ZodString>;
     email: z.ZodOptional<z.ZodString>;
-    role: z.ZodOptional<z.ZodEnum<["SUPERADMIN", "ADMIN", "STUDENT"]>>;
+    role: z.ZodOptional<z.ZodEnum<["SUPERADMIN", "ADMIN", "MEMBER"]>>;
     status: z.ZodOptional<z.ZodEnum<["ACTIVE", "DISABLED"]>>;
     orgId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     email?: string | undefined;
     name?: string | undefined;
-    role?: "SUPERADMIN" | "ADMIN" | "STUDENT" | undefined;
+    role?: "SUPERADMIN" | "ADMIN" | "MEMBER" | undefined;
     status?: "ACTIVE" | "DISABLED" | undefined;
     orgId?: string | undefined;
 }, {
     email?: string | undefined;
     name?: string | undefined;
-    role?: "SUPERADMIN" | "ADMIN" | "STUDENT" | undefined;
+    role?: "SUPERADMIN" | "ADMIN" | "MEMBER" | undefined;
     status?: "ACTIVE" | "DISABLED" | undefined;
     orgId?: string | undefined;
 }>;
-export declare const batchStudentSchema: z.ZodArray<z.ZodObject<{
+export declare const batchMemberSchema: z.ZodArray<z.ZodObject<{
     name: z.ZodString;
     email: z.ZodString;
 }, "strip", z.ZodTypeAny, {

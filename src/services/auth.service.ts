@@ -61,7 +61,8 @@ export class AuthService {
 
   static async login(data: any) {
     const user = await prisma.user.findUnique({
-      where: { email: data.email }
+      where: { email: data.email },
+      include: { organization: { select: { name: true } } }
     });
 
     if (!user || user.status === 'DISABLED') {
@@ -73,7 +74,6 @@ export class AuthService {
     }
 
     // Role-based login constraints
-    // If logging into job-tracker (determined contextually or by a flag), block org admins unless they are assigned
     if (data.app === 'job-tracker' && user.role === 'ADMIN') {
       throw new Error('Organization Admins cannot log into the applicant tracker directly.');
     }
@@ -108,7 +108,8 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
-        orgId: user.orgId
+        orgId: user.orgId,
+        organization: user.organization?.name || null
       }
     };
   }
@@ -120,7 +121,8 @@ export class AuthService {
       ) as any;
 
       const user = await prisma.user.findUnique({
-        where: { id: decoded.id }
+        where: { id: decoded.id },
+        include: { organization: { select: { name: true } } }
       });
 
       if (!user || user.status === 'DISABLED') {
@@ -147,7 +149,8 @@ export class AuthService {
           email: user.email,
           name: user.name,
           role: user.role,
-          orgId: user.orgId
+          orgId: user.orgId,
+          organization: user.organization?.name || null
         }
       };
     } catch (e) {

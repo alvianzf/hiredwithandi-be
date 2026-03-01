@@ -68,6 +68,7 @@ router.get('/organizations', authenticate, authorize(['SUPERADMIN']), Organizati
 router.post('/organizations', authenticate, authorize(['SUPERADMIN']), OrganizationController.create);
 router.patch('/organizations/:id', authenticate, authorize(['SUPERADMIN']), OrganizationController.update);
 router.delete('/organizations/:id', authenticate, authorize(['SUPERADMIN']), OrganizationController.delete);
+import { upload } from '../middleware/upload.js';
 /**
  * @openapi
  * /profile:
@@ -79,35 +80,47 @@ router.delete('/organizations/:id', authenticate, authorize(['SUPERADMIN']), Org
  *       200:
  *         description: Success
  *   patch:
- *     summary: Update user profile (including photo)
+ *     summary: Update user profile (including photo via multipart/form-data)
  *     tags: [Profile]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/ProfileUpdate'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               bio:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               linkedIn:
+ *                 type: string
+ *               avatar:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Updated
  */
 router.get('/profile', authenticate, UserController.getProfile);
-router.patch('/profile', authenticate, UserController.updateProfile);
+router.patch('/profile', authenticate, upload.single('avatar'), UserController.updateProfile);
 /**
  * @openapi
- * /students:
+ * /members:
  *   get:
- *     summary: List students in an organization
+ *     summary: List members in an organization
  *     tags: [Users]
  *     security: [{ bearerAuth: [] }]
  *     responses:
  *       200:
  *         description: Success
  */
-router.get('/students', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.getStudents);
-router.get('/students/:id/dashboard', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getStudentDashboard);
-router.get('/students/:id', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.getStudentById);
-router.post('/batch-students', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.batchCreateStudents);
+router.get('/members', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.getMembers);
+router.get('/members/:id/dashboard', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getMemberDashboard);
+router.get('/members/:id', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.getMemberById);
+router.post('/batch-members', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.batchCreateMembers);
 /**
  * @openapi
  * /users:
@@ -195,9 +208,9 @@ router.get('/stats', authenticate, authorize(['SUPERADMIN']), UserController.get
 router.get('/organizations/:id/stats', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getOrgStats);
 /**
  * @openapi
- * /students/{id}/stats:
+ * /members/{id}/stats:
  *   get:
- *     summary: Get a specific student's job statistics
+ *     summary: Get a specific member's job statistics
  *     tags: [Analytics]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
@@ -209,6 +222,6 @@ router.get('/organizations/:id/stats', authenticate, authorize(['ADMIN', 'SUPERA
  *       200:
  *         description: Success
  */
-router.get('/students/:id/stats', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getStudentStats);
+router.get('/members/:id/stats', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getMemberStats);
 export default router;
 //# sourceMappingURL=user.routes.js.map

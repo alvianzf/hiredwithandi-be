@@ -10,12 +10,12 @@ export class AnalyticsService {
   }
 
   static async getOrgStats(orgId: string) {
-    const students = await prisma.user.findMany({
-      where: { orgId, role: 'STUDENT' },
+    const members = await prisma.user.findMany({
+      where: { orgId, role: 'MEMBER' },
       select: { id: true }
     });
 
-    const userIds = students.map(s => s.id);
+    const userIds = members.map(s => s.id);
     const jobs = await prisma.job.findMany({
       where: { userId: { in: userIds } },
       include: { history: { orderBy: { enteredAt: 'asc' } } }
@@ -23,7 +23,7 @@ export class AnalyticsService {
 
     const stats = this.calculateStats(jobs);
     return {
-      studentCount: userIds.length,
+      memberCount: userIds.length,
       ...stats
     };
   }

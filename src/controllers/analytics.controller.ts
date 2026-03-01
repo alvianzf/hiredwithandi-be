@@ -24,7 +24,7 @@ export class AnalyticsController {
     }
   }
 
-  static async getStudentStats(req: AuthRequest, res: Response) {
+  static async getMemberStats(req: AuthRequest, res: Response) {
     try {
       const id = req.params['id'] as string;
       // Re-use getUserStats since it relies on just a userId
@@ -35,16 +35,16 @@ export class AnalyticsController {
     }
   }
 
-  static async getStudentDashboard(req: AuthRequest, res: Response) {
+  static async getMemberDashboard(req: AuthRequest, res: Response) {
     try {
       const { id } = req.params;
 
-      // 1. Fetch student profile and verify access
+      // 1. Fetch member profile and verify access
       // Using UserService for consistency and to ensure all fields are included
-      const student = await UserService.getProfile(id as string);
+      const member = await UserService.getProfile(id as string);
 
-      if (!student || (req.user?.role !== 'SUPERADMIN' && student.orgId !== req.user?.orgId)) {
-        return res.status(404).json({ error: { message: 'Student not found or access denied' } });
+      if (!member || (req.user?.role !== 'SUPERADMIN' && member.orgId !== req.user?.orgId)) {
+        return res.status(404).json({ error: { message: 'Member not found or access denied' } });
       }
 
       // 2. Fetch all jobs for stats calculation and display
@@ -63,7 +63,7 @@ export class AnalyticsController {
 
       res.json({
         data: {
-          student,
+          member,
           stats,
           jobs
         }
