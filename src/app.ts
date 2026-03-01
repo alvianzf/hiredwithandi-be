@@ -24,6 +24,16 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// 404 Catch-All
+app.use('*', (req: Request, res: Response) => {
+  res.status(404).json({
+    error: {
+      message: 'Looks like this endpoint ghosted you! 👻 (404 Not Found)',
+      status: 404
+    }
+  });
+});
+
 // Global Error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);

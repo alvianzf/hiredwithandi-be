@@ -135,6 +135,7 @@ sudo systemctl restart nginx
 | POST   | `/auth/check-email` | Check if email exists in system | None |
 | POST   | `/auth/register`    | Register new user               | None |
 | POST   | `/auth/login`       | Login and get JWT               | None |
+| POST   | `/auth/refresh`     | Refresh access token using RT   | None |
 
 ### 2. Organizations (`/`)
 

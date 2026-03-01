@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service.js';
-import { loginSchema, registerSchema, checkEmailSchema } from '../validators/auth.validator.js';
+import { loginSchema, registerSchema, checkEmailSchema, refreshTokenSchema } from '../validators/auth.validator.js';
 
 export class AuthController {
   static async checkEmail(req: Request, res: Response) {
@@ -32,6 +32,19 @@ export class AuthController {
     try {
       const validatedData = loginSchema.parse(req.body);
       const result = await AuthService.login(validatedData);
+      res.json({ data: result });
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ error: { message: 'Validation failed', details: error.errors } });
+      }
+      res.status(401).json({ error: { message: error.message } });
+    }
+  }
+
+  static async refresh(req: Request, res: Response) {
+    try {
+      const { refreshToken } = refreshTokenSchema.parse(req.body);
+      const result = await AuthService.refresh(refreshToken);
       res.json({ data: result });
     } catch (error: any) {
       if (error.name === 'ZodError') {

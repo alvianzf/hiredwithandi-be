@@ -49,11 +49,18 @@ export class AuthService {
     const token = jwt.sign(
       { id: user.id, role: user.role, orgId: user.orgId },
       process.env.JWT_SECRET!,
-      { expiresIn: '1d' }
+      { expiresIn: '15m' }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET! + '_refresh'),
+      { expiresIn: '7d' }
     );
 
     return {
       token,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -62,5 +69,47 @@ export class AuthService {
         orgId: user.orgId
       }
     };
+  }
+  static async refresh(refreshToken: string) {
+    try {
+      const decoded = jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET! + '_refresh')
+      ) as any;
+
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.id }
+      });
+
+      if (!user || user.status === 'DISABLED') {
+        throw new Error('User not found or disabled');
+      }
+
+      const token = jwt.sign(
+        { id: user.id, role: user.role, orgId: user.orgId },
+        process.env.JWT_SECRET!,
+        { expiresIn: '15m' }
+      );
+
+      const newRefreshToken = jwt.sign(
+        { id: user.id },
+        process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET! + '_refresh'),
+        { expiresIn: '7d' }
+      );
+
+      return {
+        token,
+        refreshToken: newRefreshToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          orgId: user.orgId
+        }
+      };
+    } catch (e) {
+      throw new Error('Invalid refresh token');
+    }
   }
 }

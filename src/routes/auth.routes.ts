@@ -71,4 +71,25 @@ router.post('/register', AuthController.register);
  */
 router.post('/login', AuthController.login);
 
+/**
+ * @openapi
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [refreshToken]
+ *             properties:
+ *               refreshToken: { type: string }
+ *     responses:
+ *       200:
+ *         description: Token refreshed
+ */
+router.post('/refresh', AuthController.refresh);
+
 export default router;
