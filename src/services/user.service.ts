@@ -1,5 +1,6 @@
 import prisma from '../config/prisma.js';
 import cloudinary from '../config/cloudinary.js';
+import bcrypt from 'bcryptjs';
 
 export class OrganizationService {
   static async getAll() {
@@ -20,6 +21,13 @@ export class OrganizationService {
     return prisma.organization.findUnique({
       where: { id },
       include: { users: true }
+    });
+  }
+
+  static async update(id: string, data: { name?: string }) {
+    return prisma.organization.update({
+      where: { id },
+      data
     });
   }
 }
@@ -91,6 +99,58 @@ export class UserService {
         linkedIn: true,
         avatarUrl: true
       }
+    });
+  }
+
+  static async getAll() {
+    return prisma.user.findMany({
+      include: {
+        organization: {
+          select: { name: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  static async createUser(data: any) {
+    const passwordHash = await bcrypt.hash(data.password || 'User#123', 10);
+    return prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        passwordHash,
+        role: data.role,
+        orgId: data.orgId,
+        status: data.status,
+      }
+    });
+  }
+
+  static async updateUser(id: string, data: any) {
+    return prisma.user.update({
+      where: { id },
+      data
+    });
+  }
+
+  static async batchCreateStudents(orgId: string, students: { name: string; email: string; }[]) {
+    // Note: Prisma createMany doesn't return the created records, and we need password hashes.
+    // For simplicity & safety, we'll hash the default password once.
+    const defaultPasswordHash = await bcrypt.hash('User#123', 10);
+
+    const records = students.map(s => ({
+      name: s.name,
+      email: s.email,
+      passwordHash: defaultPasswordHash,
+      orgId,
+      role: 'STUDENT' as const,
+      status: 'ACTIVE' as const,
+    }));
+
+    return prisma.user.createMany({
+      data: records,
+      skipDuplicates: true // Skip if email already exists
     });
   }
 }
