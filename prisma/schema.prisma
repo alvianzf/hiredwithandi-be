@@ -29,6 +29,11 @@ model Job {
   updatedAt           DateTime     @updatedAt
   user                User         @relation(name: "UserToJobs", fields: [userId], references: [id])
   history             JobHistory[] @relation(name: "JobToHistory")
+
+  @@index([userId])
+  @@index([status])
+  @@index([dateApplied])
+  @@index([boardPosition])
 }
 
 model JobHistory {
@@ -38,6 +43,9 @@ model JobHistory {
   enteredAt DateTime  @default(now())
   leftAt    DateTime?
   job       Job       @relation(name: "JobToHistory", fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([status])
 }
 
 model Organization {
@@ -66,6 +74,9 @@ model User {
   lastLogin    DateTime?
   jobs         Job[]         @relation(name: "UserToJobs")
   organization Organization? @relation(name: "OrgToUsers", fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
+  @@index([role])
 }
 
 enum OrganizationStatus {
