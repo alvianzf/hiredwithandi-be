@@ -218,5 +218,6 @@ router.get('/organizations/:id/stats', authenticate, authorize(['ADMIN', 'SUPERA
  *         description: Success
  */
 router.get('/students/:id/stats', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getStudentStats);
+router.get('/students/:id/dashboard', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getStudentDashboard);
 
 export default router;

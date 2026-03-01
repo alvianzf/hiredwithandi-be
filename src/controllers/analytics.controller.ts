@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AnalyticsService } from '../services/analytics.service.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
+import prisma from '../config/prisma.js';
 
 export class AnalyticsController {
   static async getUserStats(req: AuthRequest, res: Response) {
@@ -28,6 +29,50 @@ export class AnalyticsController {
       // Re-use getUserStats since it relies on just a userId
       const stats = await AnalyticsService.getUserStats(id);
       res.json({ data: stats });
+    } catch (error: any) {
+      res.status(500).json({ error: { message: error.message } });
+    }
+  }
+
+  static async getStudentDashboard(req: AuthRequest, res: Response) {
+    try {
+      const { id } = req.params;
+
+      // 1. Fetch student profile and verify access
+      // We'll use a direct prisma check here for efficiency or import UserService
+      const student = await prisma.user.findUnique({
+        where: { id: id as string },
+        select: {
+          id: true, email: true, name: true, role: true, status: true, orgId: true,
+          bio: true, location: true, linkedIn: true, avatarUrl: true, createdAt: true
+        }
+      });
+
+      if (!student || (req.user?.role !== 'SUPERADMIN' && student.orgId !== req.user?.orgId)) {
+        return res.status(404).json({ error: { message: 'Student not found or access denied' } });
+      }
+
+      // 2. Fetch all jobs for stats calculation and display
+      const jobs = await prisma.job.findMany({
+        where: { userId: id as string },
+        orderBy: { boardPosition: 'asc' },
+        include: { history: { orderBy: { enteredAt: 'asc' } } }
+      });
+
+      // 3. Calculate stats using internal helper (making it semi-public for this call)
+      // Since calculateStats is private in AnalyticsService, we'll wrap it or just use AnalyticsService.getUserStats
+      // Actually, for maximum speed, we just use the jobs we already fetched.
+      // We'll cast to any to call the private static method if needed, or better, just call getUserStats
+      // But we want to avoid double fetching.
+      const stats = (AnalyticsService as any).calculateStats(jobs);
+
+      res.json({
+        data: {
+          student,
+          stats,
+          jobs
+        }
+      });
     } catch (error: any) {
       res.status(500).json({ error: { message: error.message } });
     }

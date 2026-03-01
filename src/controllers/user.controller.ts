@@ -70,6 +70,14 @@ export class UserController {
       const { id } = req.params;
       const student = await UserService.getProfile(id as string);
 
+      console.log('DEBUG: getStudentById lookup', {
+        id,
+        studentFound: !!student,
+        adminRole: req.user?.role,
+        adminOrgId: req.user?.orgId,
+        studentOrgId: student?.orgId
+      });
+
       if (!student || (req.user?.role !== 'SUPERADMIN' && student.orgId !== req.user?.orgId)) {
         return res.status(404).json({ error: { message: 'Student not found or access denied' } });
       }
