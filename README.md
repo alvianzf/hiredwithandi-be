@@ -229,6 +229,8 @@ sudo systemctl restart nginx
 
 ## Development
 
+**Note**: The backend CORS policy allows requests from all `localhost` and `127.0.0.1` ports to ease local frontend development.
+
 ```bash
 # Watch mode
 npm run dev

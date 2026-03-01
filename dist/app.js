@@ -17,9 +17,8 @@ app.use(async (req, res, next) => {
     next();
 });
 const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3000',
+    /^http:\/\/localhost(:\d+)?$/,
+    /^http:\/\/127\.0\.0\.1(:\d+)?$/,
     /^https?:\/\/([a-z0-9-]+\.)*vercel\.app$/,
     /^https?:\/\/([a-z0-9-]+\.)*learnwithandi\.com$/,
 ];
