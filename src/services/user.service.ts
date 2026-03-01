@@ -119,7 +119,7 @@ export class UserService {
     if (!user) return null;
     return {
       ...user,
-      organization: user.organization || null
+      organization: user.organization?.name || ''
     };
   }
 
