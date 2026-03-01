@@ -1,5 +1,5 @@
 import prisma from '../config/prisma.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 export class AuthService {
@@ -169,6 +169,7 @@ export class AuthService {
     }
 
     const isMatch = await bcrypt.compare(data.currentPassword, user.passwordHash);
+
     if (!isMatch) {
       throw new Error('Current password is incorrect');
     }
