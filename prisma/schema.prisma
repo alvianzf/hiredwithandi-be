@@ -27,8 +27,8 @@ model Job {
   boardPosition       Float        @default(0)
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
-  user                User         @relation(fields: [userId], references: [id])
-  history             JobHistory[]
+  user                User         @relation(name: "UserToJobs", fields: [userId], references: [id])
+  history             JobHistory[] @relation(name: "JobToHistory")
 }
 
 model JobHistory {
@@ -37,7 +37,7 @@ model JobHistory {
   status    String
   enteredAt DateTime  @default(now())
   leftAt    DateTime?
-  job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job       Job       @relation(name: "JobToHistory", fields: [jobId], references: [id], onDelete: Cascade)
 }
 
 model Organization {
@@ -46,7 +46,7 @@ model Organization {
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
   status    OrganizationStatus @default(ACTIVE)
-  users     User[]
+  users     User[]             @relation(name: "OrgToUsers")
 }
 
 model User {
@@ -64,8 +64,8 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   lastLogin    DateTime?
-  jobs         Job[]
-  organization Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  jobs         Job[]         @relation(name: "UserToJobs")
+  organization Organization? @relation(name: "OrgToUsers", fields: [orgId], references: [id], onDelete: Cascade)
 }
 
 enum OrganizationStatus {
