@@ -30,9 +30,46 @@ const router = Router();
  *       201:
  *         description: Created
  */
+/**
+ * @openapi
+ * /organizations/{id}:
+ *   patch:
+ *     summary: Update an organization
+ *     tags: [Organizations]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               status: { type: string }
+ *     responses:
+ *       200:
+ *         description: Updated
+ *   delete:
+ *     summary: Delete an organization
+ *     tags: [Organizations]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Deleted
+ */
 router.get('/organizations', authenticate, authorize(['SUPERADMIN']), OrganizationController.getAll);
 router.post('/organizations', authenticate, authorize(['SUPERADMIN']), OrganizationController.create);
 router.patch('/organizations/:id', authenticate, authorize(['SUPERADMIN']), OrganizationController.update);
+router.delete('/organizations/:id', authenticate, authorize(['SUPERADMIN']), OrganizationController.delete);
 
 /**
  * @openapi

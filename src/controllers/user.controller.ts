@@ -39,6 +39,15 @@ export class OrganizationController {
       res.status(400).json({ error: { message: error.message } });
     }
   }
+
+  static async delete(req: Request, res: Response) {
+    try {
+      await OrganizationService.delete(req.params.id as string);
+      res.json({ message: 'Organization deleted successfully' });
+    } catch (error: any) {
+      res.status(400).json({ error: { message: error.message } });
+    }
+  }
 }
 
 export class UserController {

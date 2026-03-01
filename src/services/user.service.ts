@@ -14,6 +14,10 @@ export class OrganizationService {
   }
 
   static async create(data: { name: string }) {
+    const existing = await prisma.organization.findUnique({ where: { name: data.name } });
+    if (existing) {
+      throw new Error(`Organization '${data.name}' already exists.`);
+    }
     return prisma.organization.create({ data });
   }
 
@@ -24,10 +28,16 @@ export class OrganizationService {
     });
   }
 
-  static async update(id: string, data: { name?: string }) {
+  static async update(id: string, data: { name?: string; status?: 'ACTIVE' | 'DISABLED' }) {
     return prisma.organization.update({
       where: { id },
       data
+    });
+  }
+
+  static async delete(id: string) {
+    return prisma.organization.delete({
+      where: { id }
     });
   }
 }

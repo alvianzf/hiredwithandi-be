@@ -20,6 +20,7 @@ export const profileUpdateSchema = z.object({
 
 export const organizationUpdateSchema = z.object({
   name: z.string().min(2).optional(),
+  status: z.enum(['ACTIVE', 'DISABLED']).optional(),
 });
 
 export const userCreateSchema = z.object({
