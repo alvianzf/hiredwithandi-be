@@ -1,4 +1,18 @@
 import prisma from '../config/prisma.js';
+import fs from 'fs/promises';
+import path from 'path';
+async function deleteAvatarFile(avatarUrl) {
+    if (!avatarUrl || !avatarUrl.startsWith('/uploads/avatars/'))
+        return;
+    try {
+        const absolutePath = path.join(process.cwd(), 'public', avatarUrl);
+        await fs.unlink(absolutePath);
+    }
+    catch (error) {
+        // Ignore ENOENT errors (file already deleted) or log others silently
+        console.error('Failed to delete avatar file:', error);
+    }
+}
 export class OrganizationService {
     static async getAll() {
         return prisma.organization.findMany({
@@ -29,6 +43,16 @@ export class OrganizationService {
         });
     }
     static async delete(id) {
+        // Before deleting the org, clean up physical avatars of all users in it
+        const users = await prisma.user.findMany({
+            where: { orgId: id },
+            select: { avatarUrl: true }
+        });
+        for (const user of users) {
+            if (user.avatarUrl) {
+                await deleteAvatarFile(user.avatarUrl);
+            }
+        }
         return prisma.organization.delete({
             where: { id }
         });
@@ -83,6 +107,10 @@ export class UserService {
     }
     static async updateProfile(userId, data, file) {
         let updateData = { ...data };
+        const existingUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { avatarUrl: true }
+        });
         // If a file is provided via multipart/form-data, save to local disk
         if (file) {
             try {
@@ -99,14 +127,21 @@ export class UserService {
                 // Save the buffer to disk
                 await fs.writeFile(absolutePath, file.buffer);
                 updateData.avatarUrl = `/${relativePath}`;
+                // Cleanup old local avatar if one existed
+                if (existingUser?.avatarUrl) {
+                    await deleteAvatarFile(existingUser.avatarUrl);
+                }
             }
             catch (error) {
                 throw new Error(`Profile photo upload failed: ${error.message}`);
             }
         }
-        else if (data.avatarUrl === null) {
+        else if (data.avatarUrl === null || data.avatarUrl === 'null' || data.avatarUrl === '') {
             // Allow clearing the avatar explicitly
             updateData.avatarUrl = null;
+            if (existingUser?.avatarUrl) {
+                await deleteAvatarFile(existingUser.avatarUrl);
+            }
         }
         const user = await prisma.user.update({
             where: { id: userId },
