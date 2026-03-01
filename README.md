@@ -1,5 +1,7 @@
 # HiredWithAndi Backend
 
+![CI/CD](https://github.com/alvianzf/hiredwithandi-be/actions/workflows/ci-cd.yml/badge.svg)
+
 A scalable, maintainable, and type-safe backend for the HiredWithAndi ecosystem. Built with Node.js, Express, and PostgreSQL.
 
 ## Tech Stack
