@@ -54,6 +54,19 @@ export class UserController {
             res.status(500).json({ error: { message: error.message } });
         }
     }
+    static async getStudentById(req, res) {
+        try {
+            const { id } = req.params;
+            const student = await UserService.getProfile(id);
+            if (!student || (req.user?.role !== 'SUPERADMIN' && student.orgId !== req.user?.orgId)) {
+                return res.status(404).json({ error: { message: 'Student not found or access denied' } });
+            }
+            res.json({ data: student });
+        }
+        catch (error) {
+            res.status(500).json({ error: { message: error.message } });
+        }
+    }
     static async getStats(req, res) {
         try {
             const stats = await UserService.getSuperadminStats();

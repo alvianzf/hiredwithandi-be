@@ -7,6 +7,72 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Job {
+  id                  String       @id
+  userId              String
+  company             String
+  position            String
+  url                 String?
+  salary              String?
+  notes               String?
+  workType            WorkType     @default(ONSITE)
+  location            String?
+  finalOffer          String?
+  benefits            String?
+  nonMonetaryBenefits String?
+  jobFitPercentage    Float        @default(0)
+  dateApplied         DateTime     @default(now())
+  statusChangedAt     DateTime     @default(now())
+  status              String
+  boardPosition       Float        @default(0)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime
+  User                User         @relation(fields: [userId], references: [id])
+  JobHistory          JobHistory[]
+}
+
+model JobHistory {
+  id        String    @id
+  jobId     String
+  status    String
+  enteredAt DateTime  @default(now())
+  leftAt    DateTime?
+  Job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model Organization {
+  id        String             @id
+  name      String             @unique
+  createdAt DateTime           @default(now())
+  updatedAt DateTime
+  status    OrganizationStatus @default(ACTIVE)
+  User      User[]
+}
+
+model User {
+  id           String        @id
+  email        String        @unique
+  passwordHash String?
+  name         String
+  role         Role          @default(STUDENT)
+  status       UserStatus    @default(ACTIVE)
+  orgId        String?
+  bio          String?
+  location     String?
+  linkedIn     String?
+  avatarUrl    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime
+  lastLogin    DateTime?
+  Job          Job[]
+  Organization Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+}
+
+enum OrganizationStatus {
+  ACTIVE
+  DISABLED
+}
+
 enum Role {
   SUPERADMIN
   ADMIN
@@ -18,78 +84,8 @@ enum UserStatus {
   DISABLED
 }
 
-enum OrganizationStatus {
-  ACTIVE
-  DISABLED
-}
-
 enum WorkType {
   REMOTE
   ONSITE
   HYBRID
-}
-
-model Organization {
-  id        String             @id @default(uuid())
-  name      String             @unique
-  status    OrganizationStatus @default(ACTIVE)
-  users     User[]
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
-}
-
-model User {
-  id           String        @id @default(uuid())
-  email        String        @unique
-  passwordHash String?
-  name         String
-  role         Role          @default(STUDENT)
-  status       UserStatus    @default(ACTIVE)
-  orgId        String?
-  organization Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  
-  // Profile fields
-  bio       String?
-  location  String?
-  linkedIn  String?
-  avatarUrl String?
-
-  jobs      Job[]
-  lastLogin DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Job {
-  id                  String   @id @default(uuid())
-  userId              String
-  user                User     @relation(fields: [userId], references: [id])
-  company             String
-  position            String
-  url                 String?
-  salary              String?
-  notes               String?
-  workType            WorkType @default(ONSITE)
-  location            String?
-  finalOffer          String?
-  benefits            String?
-  nonMonetaryBenefits String?
-  jobFitPercentage    Float    @default(0)
-  dateApplied         DateTime @default(now())
-  statusChangedAt     DateTime @default(now())
-  status              String   // e.g., 'wishlist', 'applied', etc.
-  boardPosition       Float    @default(0)
-  
-  history             JobHistory[]
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-}
-
-model JobHistory {
-  id        String   @id @default(uuid())
-  jobId     String
-  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  status    String
-  enteredAt DateTime @default(now())
-  leftAt    DateTime?
 }

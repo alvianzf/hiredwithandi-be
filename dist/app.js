@@ -6,6 +6,15 @@ import jobRoutes from './routes/job.routes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 const app = express();
+app.use(async (req, res, next) => {
+    try {
+        const fs = await import('fs/promises');
+        const log = `${new Date().toISOString()} - ${req.method} ${req.url} - Base: ${req.baseUrl} - Path: ${req.path}\n`;
+        await fs.appendFile('request.log', log);
+    }
+    catch (e) { }
+    next();
+});
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
@@ -29,7 +38,8 @@ app.use(cors({
     },
     credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
+app.use('/uploads', express.static('public/uploads'));
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
@@ -41,6 +51,7 @@ app.get('/health', (req, res) => {
 });
 // 404 Catch-All
 app.use('*', (req, res) => {
+    console.log(`404_DEBUG: ${req.method} ${req.url} - Base: ${req.baseUrl} - Path: ${req.path}`);
     res.status(404).json({
         error: {
             message: 'Looks like this endpoint ghosted you! 👻 (404 Not Found)',

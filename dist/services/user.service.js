@@ -1,5 +1,4 @@
 import prisma from '../config/prisma.js';
-import cloudinary from '../config/cloudinary.js';
 export class OrganizationService {
     static async getAll() {
         return prisma.organization.findMany({
@@ -75,14 +74,18 @@ export class UserService {
     }
     static async updateProfile(userId, data) {
         let updateData = { ...data };
-        // If avatarUrl is a Base64 string, upload to Cloudinary
+        // If avatarUrl is a Base64 string, save to local disk
         if (data.avatarUrl && data.avatarUrl.startsWith('data:image')) {
             try {
-                const uploadResponse = await cloudinary.uploader.upload(data.avatarUrl, {
-                    folder: 'hwa_profiles',
-                    resource_type: 'image'
-                });
-                updateData.avatarUrl = uploadResponse.secure_url;
+                const fs = await import('fs/promises');
+                const path = await import('path');
+                const base64Data = data.avatarUrl.replace(/^data:image\/\w+;base64,/, "");
+                const extension = data.avatarUrl.split(';')[0].split('/')[1];
+                const fileName = `${userId}-${Date.now()}.${extension}`;
+                const relativePath = `uploads/avatars/${fileName}`;
+                const absolutePath = path.join(process.cwd(), 'public', relativePath);
+                await fs.writeFile(absolutePath, base64Data, 'base64');
+                updateData.avatarUrl = `/${relativePath}`;
             }
             catch (error) {
                 throw new Error(`Profile photo upload failed: ${error.message}`);
