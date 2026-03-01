@@ -17,7 +17,8 @@ export class AnalyticsController {
   static async getOrgStats(req: AuthRequest, res: Response) {
     try {
       const id = req.params['id'] as string;
-      const stats = await AnalyticsService.getOrgStats(id);
+      const batchId = req.query.batchId as string | undefined;
+      const stats = await AnalyticsService.getOrgStats(id, batchId);
       res.json({ data: stats });
     } catch (error: any) {
       res.status(500).json({ error: { message: error.message } });

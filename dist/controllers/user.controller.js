@@ -47,7 +47,8 @@ export class UserController {
             if (!orgId && req.user?.role !== 'SUPERADMIN') {
                 return res.status(403).json({ error: { message: 'Organization ID missing' } });
             }
-            const members = await UserService.getMembersByOrg(orgId);
+            const batchId = req.query.batchId;
+            const members = await UserService.getMembersByOrg(orgId, batchId);
             res.json({ data: members });
         }
         catch (error) {

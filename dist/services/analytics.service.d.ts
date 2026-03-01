@@ -83,7 +83,7 @@ export declare class AnalyticsService {
             averageDays: string;
         }[];
     }>;
-    static getOrgStats(orgId: string): Promise<{
+    static getOrgStats(orgId: string, batchId?: string): Promise<{
         overview: {
             all: number;
             offered: {

@@ -14,7 +14,8 @@ export class AnalyticsController {
     static async getOrgStats(req, res) {
         try {
             const id = req.params['id'];
-            const stats = await AnalyticsService.getOrgStats(id);
+            const batchId = req.query.batchId;
+            const stats = await AnalyticsService.getOrgStats(id, batchId);
             res.json({ data: stats });
         }
         catch (error) {

@@ -28,6 +28,7 @@ export declare class OrganizationService {
             role: import(".prisma/client").$Enums.Role;
             status: import(".prisma/client").$Enums.UserStatus;
             orgId: string | null;
+            batchId: string | null;
             bio: string | null;
             location: string | null;
             linkedIn: string | null;
@@ -62,13 +63,17 @@ export declare class OrganizationService {
     }>;
 }
 export declare class UserService {
-    static getMembersByOrg(orgId: string): Promise<{
+    static getMembersByOrg(orgId: string, batchId?: string): Promise<{
         id: string;
         email: string;
         name: string;
         status: import(".prisma/client").$Enums.UserStatus;
         createdAt: Date;
         lastLogin: Date | null;
+        batch: {
+            id: string;
+            name: string;
+        } | null;
     }[]>;
     static getSuperadminStats(): Promise<{
         totalOrganizations: number;
@@ -84,11 +89,16 @@ export declare class UserService {
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
         orgId: string | null;
+        batchId: string | null;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
         avatarUrl: string | null;
         createdAt: Date;
+        batch: {
+            id: string;
+            name: string;
+        } | null;
     } | null>;
     static updateProfile(userId: string, data: any, file?: Express.Multer.File): Promise<{
         organization: string;
@@ -113,6 +123,7 @@ export declare class UserService {
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
         orgId: string | null;
+        batchId: string | null;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
@@ -129,6 +140,7 @@ export declare class UserService {
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
         orgId: string | null;
+        batchId: string | null;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
@@ -145,6 +157,7 @@ export declare class UserService {
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
         orgId: string | null;
+        batchId: string | null;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
@@ -156,5 +169,6 @@ export declare class UserService {
     static batchCreateMembers(orgId: string, members: {
         name?: string;
         email: string;
+        batchId?: string | null;
     }[]): Promise<import(".prisma/client").Prisma.BatchPayload>;
 }

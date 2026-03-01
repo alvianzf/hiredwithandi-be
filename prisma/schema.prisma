@@ -55,6 +55,7 @@ model Organization {
   updatedAt DateTime           @updatedAt
   status    OrganizationStatus @default(ACTIVE)
   users     User[]             @relation(name: "OrgToUsers")
+  batches   Batch[]            @relation(name: "OrgToBatches")
 }
 
 model User {
@@ -65,6 +66,7 @@ model User {
   role         Role          @default(MEMBER)
   status       UserStatus    @default(ACTIVE)
   orgId        String?
+  batchId      String?
   bio          String?
   location     String?
   linkedIn     String?
@@ -74,8 +76,10 @@ model User {
   lastLogin    DateTime?
   jobs         Job[]         @relation(name: "UserToJobs")
   organization Organization? @relation(name: "OrgToUsers", fields: [orgId], references: [id], onDelete: Cascade)
+  batch        Batch?        @relation(name: "BatchToUsers", fields: [batchId], references: [id], onDelete: SetNull)
 
   @@index([orgId])
+  @@index([batchId])
   @@index([role])
 }
 
@@ -99,4 +103,17 @@ enum WorkType {
   REMOTE
   ONSITE
   HYBRID
+}
+
+model Batch {
+  id           String       @id @default(uuid())
+  name         String
+  orgId        String
+  organization Organization @relation(name: "OrgToBatches", fields: [orgId], references: [id], onDelete: Cascade)
+  users        User[]       @relation(name: "BatchToUsers")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([name, orgId]) // Batch names should be unique within an organization
+  @@index([orgId])
 }

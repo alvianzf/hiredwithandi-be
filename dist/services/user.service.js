@@ -59,16 +59,20 @@ export class OrganizationService {
     }
 }
 export class UserService {
-    static async getMembersByOrg(orgId) {
+    static async getMembersByOrg(orgId, batchId) {
+        const whereClause = { orgId, role: 'MEMBER' };
+        if (batchId)
+            whereClause.batchId = batchId;
         return prisma.user.findMany({
-            where: { orgId, role: 'MEMBER' },
+            where: whereClause,
             select: {
                 id: true,
                 email: true,
                 name: true,
                 status: true,
                 lastLogin: true,
-                createdAt: true
+                createdAt: true,
+                batch: { select: { id: true, name: true } }
             },
             orderBy: { createdAt: 'desc' }
         });
@@ -88,6 +92,7 @@ export class UserService {
                 role: true,
                 status: true,
                 orgId: true,
+                batchId: true,
                 bio: true,
                 location: true,
                 linkedIn: true,
@@ -95,6 +100,9 @@ export class UserService {
                 createdAt: true,
                 organization: {
                     select: { name: true }
+                },
+                batch: {
+                    select: { id: true, name: true }
                 }
             }
         });
@@ -182,6 +190,7 @@ export class UserService {
                 email: data.email,
                 role: data.role,
                 orgId: data.orgId,
+                batchId: data.batchId,
                 status: data.status,
             }
         });
@@ -197,6 +206,7 @@ export class UserService {
             name: s.name || s.email.split('@')[0],
             email: s.email,
             orgId,
+            batchId: s.batchId || null,
             role: 'MEMBER',
             status: 'ACTIVE',
         }));

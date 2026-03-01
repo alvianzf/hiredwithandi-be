@@ -9,9 +9,12 @@ export class AnalyticsService {
     return this.calculateStats(jobs);
   }
 
-  static async getOrgStats(orgId: string) {
+  static async getOrgStats(orgId: string, batchId?: string) {
+    const whereClause: any = { orgId, role: 'MEMBER' };
+    if (batchId) whereClause.batchId = batchId;
+
     const members = await prisma.user.findMany({
-      where: { orgId, role: 'MEMBER' },
+      where: whereClause,
       select: { id: true }
     });
 
@@ -51,9 +54,9 @@ export class AnalyticsService {
 
     // Avg Days in pipeline
     const getDaysInPipeline = (job: any) => {
-      if (!job.history || job.history.length === 0) return 0;
-      const start = new Date(job.history[0].enteredAt).getTime();
-      const end = job.history[job.history.length - 1].leftAt
+      // Use dateApplied explicitly instead of history[0].enteredAt so it captures user's original timestamp
+      const start = new Date(job.dateApplied || job.createdAt).getTime();
+      const end = (job.history && job.history.length > 0 && job.history[job.history.length - 1].leftAt)
         ? new Date(job.history[job.history.length - 1].leftAt).getTime()
         : new Date().getTime();
       return Math.round((end - start) / (1000 * 60 * 60 * 24));
@@ -196,9 +199,12 @@ export class AnalyticsService {
     statuses.forEach(s => stageTime[s.key] = { totalDays: 0, count: 0 });
 
     jobs.forEach(j => {
-      j.history?.forEach((h: any) => {
+      j.history?.forEach((h: any, index: number) => {
         if (stageTime[h.status]) {
-          const start = new Date(h.enteredAt).getTime();
+          // If it's the very first stage, use dateApplied if available, otherwise fallback to enteredAt
+          const start = (index === 0 && j.dateApplied)
+            ? new Date(j.dateApplied).getTime()
+            : new Date(h.enteredAt).getTime();
           const end = h.leftAt ? new Date(h.leftAt).getTime() : new Date().getTime();
           const days = (end - start) / (1000 * 60 * 60 * 24);
           stageTime[h.status].totalDays += days;

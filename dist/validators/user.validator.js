@@ -23,6 +23,7 @@ export const userCreateSchema = z.object({
     email: z.string().email(),
     role: z.enum(['SUPERADMIN', 'ADMIN', 'MEMBER']),
     orgId: z.string().optional(),
+    batchId: z.string().optional().nullable(),
     password: z.string().min(6).optional(), // Can provide default if empty
 });
 export const userUpdateSchema = z.object({
@@ -31,9 +32,11 @@ export const userUpdateSchema = z.object({
     role: z.enum(['SUPERADMIN', 'ADMIN', 'MEMBER']).optional(),
     status: z.enum(['ACTIVE', 'DISABLED']).optional(),
     orgId: z.string().optional(),
+    batchId: z.string().optional().nullable(),
 });
 export const batchMemberSchema = z.array(z.object({
     name: z.string().min(2),
     email: z.string().email(),
+    batchId: z.string().optional().nullable(),
 }));
 //# sourceMappingURL=user.validator.js.map
