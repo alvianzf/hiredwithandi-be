@@ -51,8 +51,10 @@ export class UserService {
         email: true,
         name: true,
         status: true,
+        lastLogin: true,
         createdAt: true
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     });
   }
 
