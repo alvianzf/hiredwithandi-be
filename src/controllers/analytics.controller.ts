@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { AnalyticsService } from '../services/analytics.service.js';
+import { UserService } from '../services/user.service.js';
 import { AuthRequest } from '../middlewares/auth.middleware.js';
 import prisma from '../config/prisma.js';
 
@@ -39,14 +40,8 @@ export class AnalyticsController {
       const { id } = req.params;
 
       // 1. Fetch student profile and verify access
-      // We'll use a direct prisma check here for efficiency or import UserService
-      const student = await prisma.user.findUnique({
-        where: { id: id as string },
-        select: {
-          id: true, email: true, name: true, role: true, status: true, orgId: true,
-          bio: true, location: true, linkedIn: true, avatarUrl: true, createdAt: true
-        }
-      });
+      // Using UserService for consistency and to ensure all fields are included
+      const student = await UserService.getProfile(id as string);
 
       if (!student || (req.user?.role !== 'SUPERADMIN' && student.orgId !== req.user?.orgId)) {
         return res.status(404).json({ error: { message: 'Student not found or access denied' } });
