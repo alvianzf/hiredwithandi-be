@@ -18,6 +18,11 @@ enum UserStatus {
   DISABLED
 }
 
+enum OrganizationStatus {
+  ACTIVE
+  DISABLED
+}
+
 enum WorkType {
   REMOTE
   ONSITE
@@ -25,11 +30,12 @@ enum WorkType {
 }
 
 model Organization {
-  id        String   @id @default(uuid())
-  name      String
+  id        String             @id @default(uuid())
+  name      String             @unique
+  status    OrganizationStatus @default(ACTIVE)
   users     User[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 }
 
 model User {
@@ -40,7 +46,7 @@ model User {
   role         Role          @default(STUDENT)
   status       UserStatus    @default(ACTIVE)
   orgId        String?
-  organization Organization? @relation(fields: [orgId], references: [id])
+  organization Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
   
   // Profile fields
   bio       String?
