@@ -9,6 +9,15 @@ import swaggerSpec from './config/swagger.js';
 
 const app = express();
 
+app.use(async (req, res, next) => {
+  try {
+    const fs = await import('fs/promises');
+    const log = `${new Date().toISOString()} - ${req.method} ${req.url} - Base: ${req.baseUrl} - Path: ${req.path}\n`;
+    await fs.appendFile('request.log', log);
+  } catch (e) { }
+  next();
+});
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
@@ -49,6 +58,7 @@ app.get('/health', (req: Request, res: Response) => {
 
 // 404 Catch-All
 app.use('*', (req: Request, res: Response) => {
+  console.log(`404_DEBUG: ${req.method} ${req.url} - Base: ${req.baseUrl} - Path: ${req.path}`);
   res.status(404).json({
     error: {
       message: 'Looks like this endpoint ghosted you! 👻 (404 Not Found)',

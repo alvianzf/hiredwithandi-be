@@ -109,6 +109,7 @@ router.patch('/profile', authenticate, UserController.updateProfile);
  *         description: Success
  */
 router.get('/students', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.getStudents);
+router.get('/students/:id/dashboard', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getStudentDashboard);
 router.get('/students/:id', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.getStudentById);
 router.post('/batch-students', authenticate, authorize(['ADMIN', 'SUPERADMIN']), UserController.batchCreateStudents);
 
@@ -218,6 +219,5 @@ router.get('/organizations/:id/stats', authenticate, authorize(['ADMIN', 'SUPERA
  *         description: Success
  */
 router.get('/students/:id/stats', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getStudentStats);
-router.get('/students/:id/dashboard', authenticate, authorize(['ADMIN', 'SUPERADMIN']), AnalyticsController.getStudentDashboard);
 
 export default router;
