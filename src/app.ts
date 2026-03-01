@@ -9,7 +9,29 @@ import swaggerSpec from './config/swagger.js';
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  /^https?:\/\/([a-z0-9-]+\.)*learnwithandi\.com$/
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    for (const allowed of allowedOrigins) {
+      if (typeof allowed === 'string' && origin === allowed) {
+        return callback(null, true);
+      } else if (allowed instanceof RegExp && allowed.test(origin)) {
+        return callback(null, true);
+      }
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Swagger Documentation
