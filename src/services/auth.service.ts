@@ -1,6 +1,7 @@
 import prisma from '../config/prisma.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 export class AuthService {
   static async checkEmail(email: string) {
@@ -91,14 +92,24 @@ export class AuthService {
     // Compute disabled: user is disabled OR their org is disabled
     const isDisabled = user.status === 'DISABLED' || user.organization?.status === 'DISABLED';
 
+    // For MEMBER: generate unique session token (single concurrent login)
+    let sessionToken: string | undefined;
+    if (user.role === 'MEMBER') {
+      sessionToken = crypto.randomUUID();
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { sessionToken }
+      });
+    }
+
     const token = jwt.sign(
-      { id: user.id, role: user.role, orgId: user.orgId, status: user.status },
+      { id: user.id, role: user.role, orgId: user.orgId, status: user.status, ...(sessionToken ? { sessionToken } : {}) },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
 
     const refreshToken = jwt.sign(
-      { id: user.id },
+      { id: user.id, ...(sessionToken ? { sessionToken } : {}) },
       process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET! + '_refresh'),
       { expiresIn: '7d' }
     );
@@ -134,16 +145,21 @@ export class AuthService {
         throw new Error('User not found');
       }
 
+      // For MEMBER: validate session token matches (single concurrent login)
+      if (user.role === 'MEMBER' && decoded.sessionToken && user.sessionToken !== decoded.sessionToken) {
+        throw new Error('SESSION_INVALIDATED');
+      }
+
       const isDisabled = user.status === 'DISABLED' || user.organization?.status === 'DISABLED';
 
       const token = jwt.sign(
-        { id: user.id, role: user.role, orgId: user.orgId, status: user.status },
+        { id: user.id, role: user.role, orgId: user.orgId, status: user.status, ...(user.sessionToken ? { sessionToken: user.sessionToken } : {}) },
         process.env.JWT_SECRET!,
         { expiresIn: '1d' }
       );
 
       const newRefreshToken = jwt.sign(
-        { id: user.id },
+        { id: user.id, ...(user.sessionToken ? { sessionToken: user.sessionToken } : {}) },
         process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET! + '_refresh'),
         { expiresIn: '7d' }
       );
@@ -162,7 +178,10 @@ export class AuthService {
           organization: user.organization?.name || null
         }
       };
-    } catch (e) {
+    } catch (e: any) {
+      if (e.message === 'SESSION_INVALIDATED') {
+        throw e;
+      }
       throw new Error('Invalid refresh token');
     }
   }
