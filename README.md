@@ -2,11 +2,14 @@
 
 ![Version](https://img.shields.io/badge/version-v0.5-blue)
 ![CI/CD](https://github.com/alvianzf/hiredwithandi-be/actions/workflows/ci-cd.yml/badge.svg?branch=main)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat&logo=express&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-v22-339933?style=flat&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-v4.21-000000?style=flat&logo=express&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-v5.7-3178C6?style=flat&logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-v6.4-2D3748?style=flat&logo=prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-v16-4169E1?style=flat&logo=postgresql&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-v3.24-3E67B1?style=flat&logo=zod&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-v2.9-3448C5?style=flat&logo=cloudinary&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-v9.0-000000?style=flat&logo=jsonwebtokens&logoColor=white)
 
 A scalable, maintainable, and type-safe backend for the HiredWithAndi ecosystem. Built with Node.js, Express, and PostgreSQL.
 
