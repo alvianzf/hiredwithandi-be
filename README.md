@@ -1,6 +1,12 @@
 # HiredWithAndi Backend
 
+![Version](https://img.shields.io/badge/version-v0.5-blue)
 ![CI/CD](https://github.com/alvianzf/hiredwithandi-be/actions/workflows/ci-cd.yml/badge.svg)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat&logo=express&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
 
 A scalable, maintainable, and type-safe backend for the HiredWithAndi ecosystem. Built with Node.js, Express, and PostgreSQL.
 
