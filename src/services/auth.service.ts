@@ -195,4 +195,21 @@ export class AuthService {
 
     return { message: 'Password changed successfully' };
   }
+
+  static async resetPassword(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: null, sessionToken: null }
+    });
+
+    return { message: 'Password reset successfully. User must set up a new password on next login.' };
+  }
 }

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { OrganizationController, UserController } from '../controllers/user.controller.js';
 import { AnalyticsController } from '../controllers/analytics.controller.js';
+import { AuthController } from '../controllers/auth.controller.js';
 import { authenticate, authorize } from '../middlewares/auth.middleware.js';
 
 const router = Router();
@@ -184,6 +185,7 @@ router.post('/users', authenticate, authorize(['SUPERADMIN', 'ADMIN']), UserCont
  *         description: Updated
  */
 router.patch('/users/:id', authenticate, authorize(['SUPERADMIN', 'ADMIN']), UserController.updateUser);
+router.post('/users/:id/reset-password', authenticate, authorize(['SUPERADMIN', 'ADMIN']), AuthController.resetPassword);
 
 /**
  * @openapi
