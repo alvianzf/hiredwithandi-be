@@ -59,8 +59,11 @@ export class UserController {
       }
 
       const batchId = req.query.batchId as string | undefined;
-      const members = await UserService.getMembersByOrg(orgId!, batchId);
-      res.json({ data: members });
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      const { members, total } = await UserService.getMembersByOrg(orgId!, batchId, page, limit);
+      res.json({ data: members, meta: { total, page, limit } });
     } catch (error: any) {
       res.status(500).json({ error: { message: error.message } });
     }
@@ -113,8 +116,15 @@ export class UserController {
 
   static async getAllUsers(req: Request, res: Response) {
     try {
-      const users = await UserService.getAll();
-      res.json({ data: users });
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string;
+      const role = req.query.role as string;
+      const orgId = req.query.orgId as string;
+      const status = req.query.status as string;
+
+      const { users, total } = await UserService.getAll({ page, limit, search, role, orgId, status });
+      res.json({ data: users, meta: { total, page, limit } });
     } catch (error: any) {
       res.status(500).json({ error: { message: error.message } });
     }

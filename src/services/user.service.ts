@@ -79,23 +79,32 @@ export class OrganizationService {
 }
 
 export class UserService {
-  static async getMembersByOrg(orgId: string, batchId?: string) {
+  static async getMembersByOrg(orgId: string, batchId?: string, page: number = 1, limit: number = 10) {
     const whereClause: any = { orgId, role: 'MEMBER' };
     if (batchId) whereClause.batchId = batchId;
 
-    return prisma.user.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        status: true,
-        lastLogin: true,
-        createdAt: true,
-        batch: { select: { id: true, name: true } }
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    const skip = (page - 1) * limit;
+
+    const [members, total] = await Promise.all([
+      prisma.user.findMany({
+        where: whereClause,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          status: true,
+          lastLogin: true,
+          createdAt: true,
+          batch: { select: { id: true, name: true } }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      prisma.user.count({ where: whereClause })
+    ]);
+
+    return { members, total };
   }
 
   public static async getSuperadminStats() {
@@ -214,15 +223,54 @@ export class UserService {
     };
   }
 
-  static async getAll() {
-    return prisma.user.findMany({
-      include: {
-        organization: {
-          select: { name: true }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+  static async getAll(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    role?: string;
+    orgId?: string;
+    status?: string;
+  } = {}) {
+    const { page = 1, limit = 10, search, role, orgId, status } = params;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+    if (role && role !== 'All') {
+      where.role = role === 'Superadmin' ? 'SUPERADMIN' : role === 'Org Admin' ? 'ADMIN' : 'MEMBER';
+    }
+    if (orgId && orgId !== 'All') {
+      if (orgId === 'sys') {
+        where.role = 'SUPERADMIN';
+      } else {
+        where.orgId = orgId;
+      }
+    }
+    if (status && status !== 'All') {
+      where.status = status.toUpperCase();
+    }
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        include: {
+          organization: {
+            select: { name: true }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      prisma.user.count({ where })
+    ]);
+
+    return { users, total };
   }
 
   static async createUser(data: any) {
