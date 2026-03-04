@@ -71,6 +71,7 @@ model User {
   location     String?
   linkedIn     String?
   avatarUrl    String?
+  sessionToken String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   lastLogin    DateTime?
@@ -105,9 +106,15 @@ enum WorkType {
   HYBRID
 }
 
+enum BatchStatus {
+  ACTIVE
+  DISABLED
+}
+
 model Batch {
   id           String       @id @default(uuid())
   name         String
+  status       BatchStatus  @default(ACTIVE)
   orgId        String
   organization Organization @relation(name: "OrgToBatches", fields: [orgId], references: [id], onDelete: Cascade)
   users        User[]       @relation(name: "BatchToUsers")
