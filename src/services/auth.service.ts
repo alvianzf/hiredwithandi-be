@@ -41,8 +41,8 @@ export class AuthService {
       where: { email: data.email }
     });
 
-    if (!user || user.status === 'DISABLED') {
-      throw new Error('User not found or disabled');
+    if (!user) {
+      throw new Error('User not found');
     }
 
     if (user.passwordHash) {
