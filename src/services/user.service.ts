@@ -79,9 +79,30 @@ export class OrganizationService {
 }
 
 export class UserService {
-  static async getMembersByOrg(orgId: string, batchId?: string, page: number = 1, limit: number = 10) {
+  static async getMembersByOrg(orgId: string, params: {
+    batchId?: string;
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+  } = {}) {
+    const { batchId, page = 1, limit = 10, search, status } = params;
     const whereClause: any = { orgId, role: 'MEMBER' };
-    if (batchId) whereClause.batchId = batchId;
+
+    if (batchId && batchId !== 'All' && batchId !== '') {
+      whereClause.batchId = batchId;
+    }
+
+    if (search) {
+      whereClause.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
+    if (status && status !== 'All') {
+      whereClause.status = status.toUpperCase();
+    }
 
     const skip = (page - 1) * limit;
 
@@ -229,9 +250,10 @@ export class UserService {
     search?: string;
     role?: string;
     orgId?: string;
+    batchId?: string;
     status?: string;
   } = {}) {
-    const { page = 1, limit = 10, search, role, orgId, status } = params;
+    const { page = 1, limit = 10, search, role, orgId, batchId, status } = params;
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -253,6 +275,9 @@ export class UserService {
     }
     if (status && status !== 'All') {
       where.status = status.toUpperCase();
+    }
+    if (batchId && batchId !== 'All') {
+      where.batchId = batchId;
     }
 
     const [users, total] = await Promise.all([
