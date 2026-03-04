@@ -41,9 +41,21 @@ export class OrganizationService {
   }
 
   static async update(id: string, data: { name?: string; status?: 'ACTIVE' | 'DISABLED' }) {
-    return prisma.organization.update({
-      where: { id },
-      data
+    return prisma.$transaction(async (tx) => {
+      const org = await tx.organization.update({
+        where: { id },
+        data
+      });
+
+      // Cascade status change to all users in the organization
+      if (data.status) {
+        await tx.user.updateMany({
+          where: { orgId: id },
+          data: { status: data.status }
+        });
+      }
+
+      return org;
     });
   }
 
