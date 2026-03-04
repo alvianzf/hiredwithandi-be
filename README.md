@@ -1,7 +1,7 @@
 # HiredWithAndi Backend
 
 ![Version](https://img.shields.io/badge/version-v0.5-blue)
-![CI/CD](https://github.com/alvianzf/hiredwithandi-be/actions/workflows/ci-cd.yml/badge.svg)
+![CI/CD](https://github.com/alvianzf/hiredwithandi-be/actions/workflows/ci-cd.yml/badge.svg?branch=main)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat&logo=express&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
