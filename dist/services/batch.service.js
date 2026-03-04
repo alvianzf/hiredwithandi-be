@@ -26,9 +26,19 @@ export class BatchService {
         });
     }
     static async update(id, data) {
-        return prisma.batch.update({
-            where: { id },
-            data
+        return prisma.$transaction(async (tx) => {
+            const batch = await tx.batch.update({
+                where: { id },
+                data
+            });
+            // Cascade status change to all MEMBER users in this batch
+            if (data.status) {
+                await tx.user.updateMany({
+                    where: { batchId: id, role: 'MEMBER' },
+                    data: { status: data.status }
+                });
+            }
+            return batch;
         });
     }
     static async delete(id) {

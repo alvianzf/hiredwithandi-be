@@ -84,5 +84,15 @@ export class AuthController {
             res.status(400).json({ error: { message: error.message } });
         }
     }
+    static async resetPassword(req, res) {
+        try {
+            const userId = req.params.id;
+            const result = await AuthService.resetPassword(userId);
+            res.json({ data: result });
+        }
+        catch (error) {
+            res.status(400).json({ error: { message: error.message } });
+        }
+    }
 }
 //# sourceMappingURL=auth.controller.js.map

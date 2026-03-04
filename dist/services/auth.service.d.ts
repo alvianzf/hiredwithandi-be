@@ -19,6 +19,8 @@ export declare class AuthService {
             email: string;
             name: string;
             role: import(".prisma/client").$Enums.Role;
+            status: import(".prisma/client").$Enums.UserStatus;
+            isDisabled: boolean;
             orgId: string | null;
             organization: string | null;
         };
@@ -31,6 +33,8 @@ export declare class AuthService {
             email: string;
             name: string;
             role: import(".prisma/client").$Enums.Role;
+            status: import(".prisma/client").$Enums.UserStatus;
+            isDisabled: boolean;
             orgId: string | null;
             organization: string | null;
         };
@@ -43,11 +47,16 @@ export declare class AuthService {
             email: string;
             name: string;
             role: import(".prisma/client").$Enums.Role;
+            status: import(".prisma/client").$Enums.UserStatus;
+            isDisabled: boolean;
             orgId: string | null;
             organization: string | null;
         };
     }>;
     static changePassword(userId: string, data: any): Promise<{
+        message: string;
+    }>;
+    static resetPassword(userId: string): Promise<{
         message: string;
     }>;
 }

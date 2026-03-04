@@ -1,6 +1,7 @@
 import prisma from '../config/prisma.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 export class AuthService {
     static async checkEmail(email) {
         const user = await prisma.user.findUnique({
@@ -35,8 +36,8 @@ export class AuthService {
         const user = await prisma.user.findUnique({
             where: { email: data.email }
         });
-        if (!user || user.status === 'DISABLED') {
-            throw new Error('User not found or disabled');
+        if (!user) {
+            throw new Error('User not found');
         }
         if (user.passwordHash) {
             throw new Error('User already has a password');
@@ -52,10 +53,10 @@ export class AuthService {
     static async login(data) {
         const user = await prisma.user.findUnique({
             where: { email: data.email },
-            include: { organization: { select: { name: true } } }
+            include: { organization: { select: { name: true, status: true } } }
         });
-        if (!user || user.status === 'DISABLED') {
-            throw new Error('Invalid credentials or account disabled');
+        if (!user) {
+            throw new Error('Invalid credentials');
         }
         if (!user.passwordHash) {
             throw new Error('Account has no password. Please set one up first.');
@@ -72,8 +73,19 @@ export class AuthService {
             where: { id: user.id },
             data: { lastLogin: new Date() }
         });
-        const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'), { expiresIn: '7d' });
+        // Compute disabled: user is disabled OR their org is disabled
+        const isDisabled = user.status === 'DISABLED' || user.organization?.status === 'DISABLED';
+        // For MEMBER: generate unique session token (single concurrent login)
+        let sessionToken;
+        if (user.role === 'MEMBER') {
+            sessionToken = crypto.randomUUID();
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { sessionToken }
+            });
+        }
+        const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId, status: user.status, ...(sessionToken ? { sessionToken } : {}) }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const refreshToken = jwt.sign({ id: user.id, ...(sessionToken ? { sessionToken } : {}) }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'), { expiresIn: '7d' });
         return {
             token,
             refreshToken,
@@ -82,6 +94,8 @@ export class AuthService {
                 email: user.email,
                 name: user.name,
                 role: user.role,
+                status: user.status,
+                isDisabled,
                 orgId: user.orgId,
                 organization: user.organization?.name || null
             }
@@ -92,13 +106,18 @@ export class AuthService {
             const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'));
             const user = await prisma.user.findUnique({
                 where: { id: decoded.id },
-                include: { organization: { select: { name: true } } }
+                include: { organization: { select: { name: true, status: true } } }
             });
-            if (!user || user.status === 'DISABLED') {
-                throw new Error('User not found or disabled');
+            if (!user) {
+                throw new Error('User not found');
             }
-            const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'), { expiresIn: '7d' });
+            // For MEMBER: validate session token matches (single concurrent login)
+            if (user.role === 'MEMBER' && decoded.sessionToken && user.sessionToken !== decoded.sessionToken) {
+                throw new Error('SESSION_INVALIDATED');
+            }
+            const isDisabled = user.status === 'DISABLED' || user.organization?.status === 'DISABLED';
+            const token = jwt.sign({ id: user.id, role: user.role, orgId: user.orgId, status: user.status, ...(user.sessionToken ? { sessionToken: user.sessionToken } : {}) }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            const newRefreshToken = jwt.sign({ id: user.id, ...(user.sessionToken ? { sessionToken: user.sessionToken } : {}) }, process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + '_refresh'), { expiresIn: '7d' });
             return {
                 token,
                 refreshToken: newRefreshToken,
@@ -107,12 +126,17 @@ export class AuthService {
                     email: user.email,
                     name: user.name,
                     role: user.role,
+                    status: user.status,
+                    isDisabled,
                     orgId: user.orgId,
                     organization: user.organization?.name || null
                 }
             };
         }
         catch (e) {
+            if (e.message === 'SESSION_INVALIDATED') {
+                throw e;
+            }
             throw new Error('Invalid refresh token');
         }
     }
@@ -136,6 +160,19 @@ export class AuthService {
             data: { passwordHash: hashedPassword }
         });
         return { message: 'Password changed successfully' };
+    }
+    static async resetPassword(userId) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        await prisma.user.update({
+            where: { id: userId },
+            data: { passwordHash: null, sessionToken: null }
+        });
+        return { message: 'Password reset successfully. User must set up a new password on next login.' };
     }
 }
 //# sourceMappingURL=auth.service.js.map

@@ -37,9 +37,19 @@ export class OrganizationService {
         });
     }
     static async update(id, data) {
-        return prisma.organization.update({
-            where: { id },
-            data
+        return prisma.$transaction(async (tx) => {
+            const org = await tx.organization.update({
+                where: { id },
+                data
+            });
+            // Cascade status change to all users in the organization
+            if (data.status) {
+                await tx.user.updateMany({
+                    where: { orgId: id },
+                    data: { status: data.status }
+                });
+            }
+            return org;
         });
     }
     static async delete(id) {
@@ -78,9 +88,20 @@ export class UserService {
         });
     }
     static async getSuperadminStats() {
-        const orgCount = await prisma.organization.count();
-        const userCount = await prisma.user.count({ where: { role: 'MEMBER' } });
-        return { totalOrganizations: orgCount, totalMembers: userCount };
+        const [totalOrganizations, activeOrganizations, totalAdmins, totalMembers, totalPlatformUsers] = await Promise.all([
+            prisma.organization.count({ where: { isTest: false } }),
+            prisma.organization.count({ where: { status: 'ACTIVE', isTest: false } }),
+            prisma.user.count({ where: { role: 'ADMIN', isTest: false } }),
+            prisma.user.count({ where: { role: 'MEMBER', isTest: false } }),
+            prisma.user.count({ where: { isTest: false } }),
+        ]);
+        return {
+            totalOrganizations,
+            activeOrganizations,
+            totalAdmins,
+            totalMembers,
+            totalPlatformUsers
+        };
     }
     static async getProfile(userId) {
         const user = await prisma.user.findUnique({

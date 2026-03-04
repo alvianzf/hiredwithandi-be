@@ -6,4 +6,5 @@ export declare class AuthController {
     static login(req: Request, res: Response): Promise<Response<any, Record<string, any>> | undefined>;
     static refresh(req: Request, res: Response): Promise<Response<any, Record<string, any>> | undefined>;
     static changePassword(req: any, res: Response): Promise<Response<any, Record<string, any>> | undefined>;
+    static resetPassword(req: any, res: Response): Promise<void>;
 }

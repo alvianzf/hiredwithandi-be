@@ -7,6 +7,7 @@ export declare class OrganizationService {
         id: string;
         name: string;
         status: import(".prisma/client").$Enums.OrganizationStatus;
+        isTest: boolean;
         createdAt: Date;
         updatedAt: Date;
     })[]>;
@@ -16,6 +17,7 @@ export declare class OrganizationService {
         id: string;
         name: string;
         status: import(".prisma/client").$Enums.OrganizationStatus;
+        isTest: boolean;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -27,12 +29,14 @@ export declare class OrganizationService {
             name: string;
             role: import(".prisma/client").$Enums.Role;
             status: import(".prisma/client").$Enums.UserStatus;
+            isTest: boolean;
             orgId: string | null;
             batchId: string | null;
             bio: string | null;
             location: string | null;
             linkedIn: string | null;
             avatarUrl: string | null;
+            sessionToken: string | null;
             createdAt: Date;
             updatedAt: Date;
             lastLogin: Date | null;
@@ -41,6 +45,7 @@ export declare class OrganizationService {
         id: string;
         name: string;
         status: import(".prisma/client").$Enums.OrganizationStatus;
+        isTest: boolean;
         createdAt: Date;
         updatedAt: Date;
     }) | null>;
@@ -51,6 +56,7 @@ export declare class OrganizationService {
         id: string;
         name: string;
         status: import(".prisma/client").$Enums.OrganizationStatus;
+        isTest: boolean;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -58,6 +64,7 @@ export declare class OrganizationService {
         id: string;
         name: string;
         status: import(".prisma/client").$Enums.OrganizationStatus;
+        isTest: boolean;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -77,7 +84,10 @@ export declare class UserService {
     }[]>;
     static getSuperadminStats(): Promise<{
         totalOrganizations: number;
+        activeOrganizations: number;
+        totalAdmins: number;
         totalMembers: number;
+        totalPlatformUsers: number;
     }>;
     static getProfile(userId: string): Promise<{
         organization: string;
@@ -120,12 +130,14 @@ export declare class UserService {
         name: string;
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
+        isTest: boolean;
         orgId: string | null;
         batchId: string | null;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
         avatarUrl: string | null;
+        sessionToken: string | null;
         createdAt: Date;
         updatedAt: Date;
         lastLogin: Date | null;
@@ -137,12 +149,14 @@ export declare class UserService {
         name: string;
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
+        isTest: boolean;
         orgId: string | null;
         batchId: string | null;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
         avatarUrl: string | null;
+        sessionToken: string | null;
         createdAt: Date;
         updatedAt: Date;
         lastLogin: Date | null;
@@ -154,12 +168,14 @@ export declare class UserService {
         name: string;
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
+        isTest: boolean;
         orgId: string | null;
         batchId: string | null;
         bio: string | null;
         location: string | null;
         linkedIn: string | null;
         avatarUrl: string | null;
+        sessionToken: string | null;
         createdAt: Date;
         updatedAt: Date;
         lastLogin: Date | null;

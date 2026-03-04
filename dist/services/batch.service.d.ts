@@ -6,6 +6,7 @@ export declare class BatchService {
     } & {
         id: string;
         name: string;
+        status: import(".prisma/client").$Enums.BatchStatus;
         orgId: string;
         createdAt: Date;
         updatedAt: Date;
@@ -15,15 +16,18 @@ export declare class BatchService {
     }): Promise<{
         id: string;
         name: string;
+        status: import(".prisma/client").$Enums.BatchStatus;
         orgId: string;
         createdAt: Date;
         updatedAt: Date;
     }>;
     static update(id: string, data: {
         name?: string;
+        status?: 'ACTIVE' | 'DISABLED';
     }): Promise<{
         id: string;
         name: string;
+        status: import(".prisma/client").$Enums.BatchStatus;
         orgId: string;
         createdAt: Date;
         updatedAt: Date;
@@ -31,6 +35,7 @@ export declare class BatchService {
     static delete(id: string): Promise<{
         id: string;
         name: string;
+        status: import(".prisma/client").$Enums.BatchStatus;
         orgId: string;
         createdAt: Date;
         updatedAt: Date;

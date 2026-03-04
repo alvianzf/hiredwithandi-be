@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-export const authenticate = (req, res, next) => {
+import prisma from '../config/prisma.js';
+export const authenticate = async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
         return res.status(401).json({ error: { message: 'Authentication required' } });
@@ -7,6 +8,21 @@ export const authenticate = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
+        // For MEMBER: validate session token to enforce single concurrent login
+        if (decoded.role === 'MEMBER' && decoded.sessionToken) {
+            const user = await prisma.user.findUnique({
+                where: { id: decoded.id },
+                select: { sessionToken: true }
+            });
+            if (!user || user.sessionToken !== decoded.sessionToken) {
+                return res.status(401).json({
+                    error: {
+                        message: 'Your account has been signed in from another device. Please log in again.',
+                        code: 'SESSION_INVALIDATED'
+                    }
+                });
+            }
+        }
         next();
     }
     catch (error) {
