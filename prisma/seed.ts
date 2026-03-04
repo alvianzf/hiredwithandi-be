@@ -42,7 +42,10 @@ async function main() {
 
   if (!org) {
     org = await prisma.organization.create({
-      data: { name: orgName }
+      data: {
+        name: orgName,
+        isTest: true
+      }
     });
     console.log(`Created organization: ${orgName}`);
   }
@@ -58,7 +61,8 @@ async function main() {
           passwordHash: hashedPassword,
           name: `Admin ${i}`,
           role: 'ADMIN',
-          orgId: org.id
+          orgId: org.id,
+          isTest: true
         }
       });
       console.log(`Created admin: ${adminEmail}`);
@@ -98,7 +102,8 @@ async function main() {
             name: `${firstName} ${lastName}`,
             role: 'MEMBER',
             orgId: org.id,
-            batchId: batch.id
+            batchId: batch.id,
+            isTest: true
           }
         });
       }

@@ -98,21 +98,21 @@ export class UserService {
     });
   }
 
-  static async getSuperadminStats() {
-    const [totalOrgs, activeOrgs, totalAdmins, totalMembers, totalUsers] = await Promise.all([
-      prisma.organization.count(),
-      prisma.organization.count({ where: { status: 'ACTIVE' } }),
-      prisma.user.count({ where: { role: 'ADMIN' } }),
-      prisma.user.count({ where: { role: 'MEMBER' } }),
-      prisma.user.count()
+  public static async getSuperadminStats() {
+    const [totalOrganizations, activeOrganizations, totalAdmins, totalMembers, totalPlatformUsers] = await Promise.all([
+      prisma.organization.count({ where: { isTest: false } }),
+      prisma.organization.count({ where: { status: 'ACTIVE', isTest: false } }),
+      prisma.user.count({ where: { role: 'ADMIN', isTest: false } }),
+      prisma.user.count({ where: { role: 'MEMBER', isTest: false } }),
+      prisma.user.count({ where: { isTest: false } }),
     ]);
 
     return {
-      totalOrganizations: totalOrgs,
-      activeOrganizations: activeOrgs,
-      totalAdmins: totalAdmins,
-      totalMembers: totalMembers,
-      totalPlatformUsers: totalUsers
+      totalOrganizations,
+      activeOrganizations,
+      totalAdmins,
+      totalMembers,
+      totalPlatformUsers
     };
   }
 

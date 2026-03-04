@@ -54,6 +54,7 @@ model Organization {
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
   status    OrganizationStatus @default(ACTIVE)
+  isTest    Boolean            @default(false)
   users     User[]             @relation(name: "OrgToUsers")
   batches   Batch[]            @relation(name: "OrgToBatches")
 }
@@ -65,6 +66,7 @@ model User {
   name         String
   role         Role          @default(MEMBER)
   status       UserStatus    @default(ACTIVE)
+  isTest       Boolean       @default(false)
   orgId        String?
   batchId      String?
   bio          String?
