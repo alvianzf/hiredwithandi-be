@@ -62,11 +62,11 @@ export class AuthService {
   static async login(data: any) {
     const user = await prisma.user.findUnique({
       where: { email: data.email },
-      include: { organization: { select: { name: true } } }
+      include: { organization: { select: { name: true, status: true } } }
     });
 
-    if (!user || user.status === 'DISABLED') {
-      throw new Error('Invalid credentials or account disabled');
+    if (!user) {
+      throw new Error('Invalid credentials');
     }
 
     if (!user.passwordHash) {
@@ -88,8 +88,11 @@ export class AuthService {
       data: { lastLogin: new Date() }
     });
 
+    // Compute disabled: user is disabled OR their org is disabled
+    const isDisabled = user.status === 'DISABLED' || user.organization?.status === 'DISABLED';
+
     const token = jwt.sign(
-      { id: user.id, role: user.role, orgId: user.orgId },
+      { id: user.id, role: user.role, orgId: user.orgId, status: user.status },
       process.env.JWT_SECRET!,
       { expiresIn: '1d' }
     );
@@ -108,6 +111,8 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
+        status: user.status,
+        isDisabled,
         orgId: user.orgId,
         organization: user.organization?.name || null
       }
@@ -122,15 +127,17 @@ export class AuthService {
 
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
-        include: { organization: { select: { name: true } } }
+        include: { organization: { select: { name: true, status: true } } }
       });
 
-      if (!user || user.status === 'DISABLED') {
-        throw new Error('User not found or disabled');
+      if (!user) {
+        throw new Error('User not found');
       }
 
+      const isDisabled = user.status === 'DISABLED' || user.organization?.status === 'DISABLED';
+
       const token = jwt.sign(
-        { id: user.id, role: user.role, orgId: user.orgId },
+        { id: user.id, role: user.role, orgId: user.orgId, status: user.status },
         process.env.JWT_SECRET!,
         { expiresIn: '1d' }
       );
@@ -149,6 +156,8 @@ export class AuthService {
           email: user.email,
           name: user.name,
           role: user.role,
+          status: user.status,
+          isDisabled,
           orgId: user.orgId,
           organization: user.organization?.name || null
         }
