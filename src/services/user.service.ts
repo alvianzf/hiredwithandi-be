@@ -99,9 +99,21 @@ export class UserService {
   }
 
   static async getSuperadminStats() {
-    const orgCount = await prisma.organization.count({ where: { status: 'ACTIVE' } });
-    const userCount = await prisma.user.count({ where: { role: 'MEMBER', status: 'ACTIVE' } });
-    return { totalOrganizations: orgCount, totalMembers: userCount };
+    const [totalOrgs, activeOrgs, totalAdmins, totalMembers, totalUsers] = await Promise.all([
+      prisma.organization.count(),
+      prisma.organization.count({ where: { status: 'ACTIVE' } }),
+      prisma.user.count({ where: { role: 'ADMIN' } }),
+      prisma.user.count({ where: { role: 'MEMBER' } }),
+      prisma.user.count()
+    ]);
+
+    return {
+      totalOrganizations: totalOrgs,
+      activeOrganizations: activeOrgs,
+      totalAdmins: totalAdmins,
+      totalMembers: totalMembers,
+      totalPlatformUsers: totalUsers
+    };
   }
 
   static async getProfile(userId: string) {

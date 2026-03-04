@@ -191,12 +191,25 @@ router.post('/users/:id/reset-password', authenticate, authorize(['SUPERADMIN', 
  * @openapi
  * /stats:
  *   get:
- *     summary: Get system stats
+ *     summary: Get system stats (detailed breakdown)
  *     tags: [Users]
  *     security: [{ bearerAuth: [] }]
  *     responses:
  *       200:
  *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     totalOrganizations: { type: integer }
+ *                     activeOrganizations: { type: integer }
+ *                     totalAdmins: { type: integer }
+ *                     totalMembers: { type: integer }
+ *                     totalPlatformUsers: { type: integer }
  */
 router.get('/stats', authenticate, authorize(['SUPERADMIN']), UserController.getStats);
 

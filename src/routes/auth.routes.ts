@@ -69,6 +69,23 @@ router.post('/register', AuthController.register);
  *     responses:
  *       200:
  *         description: Password successfully set and logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token: { type: string }
+ *                 refreshToken: { type: string }
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     email: { type: string }
+ *                     name: { type: string }
+ *                     role: { type: string }
+ *                     status: { type: string }
+ *                     isDisabled: { type: boolean }
+ *                     orgId: { type: string }
  *       400:
  *         description: Invalid request or user already has password
  */
@@ -93,6 +110,23 @@ router.post('/setup-password', AuthController.setupPassword);
  *     responses:
  *       200:
  *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token: { type: string }
+ *                 refreshToken: { type: string }
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     email: { type: string }
+ *                     name: { type: string }
+ *                     role: { type: string }
+ *                     status: { type: string }
+ *                     isDisabled: { type: boolean }
+ *                     orgId: { type: string }
  */
 router.post('/login', AuthController.login);
 
@@ -114,6 +148,23 @@ router.post('/login', AuthController.login);
  *     responses:
  *       200:
  *         description: Token refreshed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token: { type: string }
+ *                 refreshToken: { type: string }
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     email: { type: string }
+ *                     name: { type: string }
+ *                     role: { type: string }
+ *                     status: { type: string }
+ *                     isDisabled: { type: boolean }
+ *                     orgId: { type: string }
  */
 router.post('/refresh', AuthController.refresh);
 
