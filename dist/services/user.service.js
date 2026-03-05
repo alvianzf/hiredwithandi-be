@@ -17,6 +17,10 @@ export class OrganizationService {
     static async getAll() {
         return prisma.organization.findMany({
             include: {
+                users: {
+                    where: { role: 'ADMIN' },
+                    select: { id: true, name: true, email: true, status: true }
+                },
                 _count: {
                     select: { users: { where: { role: 'MEMBER' } } }
                 }

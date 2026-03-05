@@ -3,6 +3,12 @@ export declare class OrganizationService {
         _count: {
             users: number;
         };
+        users: {
+            id: string;
+            email: string;
+            name: string;
+            status: import(".prisma/client").$Enums.UserStatus;
+        }[];
     } & {
         id: string;
         name: string;
