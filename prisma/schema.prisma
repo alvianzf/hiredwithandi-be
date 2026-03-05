@@ -60,14 +60,15 @@ model Organization {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  email        String        @unique
-  passwordHash String?
-  name         String
-  role         Role          @default(MEMBER)
-  status       UserStatus    @default(ACTIVE)
-  isTest       Boolean       @default(false)
-  orgId        String?
+  id                  String             @id @default(uuid())
+  email               String             @unique
+  passwordHash        String?
+  name                String
+  role                Role               @default(MEMBER)
+  status              UserStatus         @default(ACTIVE)
+  isTest              Boolean            @default(false)
+  isChecklistComplete Boolean            @default(false)
+  orgId               String?
   batchId      String?
   bio          String?
   location     String?
@@ -78,8 +79,9 @@ model User {
   updatedAt    DateTime      @updatedAt
   lastLogin    DateTime?
   jobs         Job[]         @relation(name: "UserToJobs")
-  organization Organization? @relation(name: "OrgToUsers", fields: [orgId], references: [id], onDelete: Cascade)
-  batch        Batch?        @relation(name: "BatchToUsers", fields: [batchId], references: [id], onDelete: SetNull)
+  organization      Organization?      @relation(name: "OrgToUsers", fields: [orgId], references: [id], onDelete: Cascade)
+  batch             Batch?             @relation(name: "BatchToUsers", fields: [batchId], references: [id], onDelete: SetNull)
+  checklistProgress ChecklistProgress? @relation(name: "UserToChecklist")
 
   @@index([orgId])
   @@index([batchId])
@@ -125,4 +127,26 @@ model Batch {
 
   @@unique([name, orgId]) // Batch names should be unique within an organization
   @@index([orgId])
+}
+
+model ChecklistProgress {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(name: "UserToChecklist", fields: [userId], references: [id], onDelete: Cascade)
+  state     Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  logs      ChecklistLog[] @relation(name: "ProgressToLogs")
+
+  @@index([userId])
+}
+
+model ChecklistLog {
+  id                  String            @id @default(uuid())
+  checklistProgressId String
+  progress            ChecklistProgress @relation(name: "ProgressToLogs", fields: [checklistProgressId], references: [id], onDelete: Cascade)
+  changes             Json              // Store the diff or the new state
+  createdAt           DateTime          @default(now())
+
+  @@index([checklistProgressId])
 }
