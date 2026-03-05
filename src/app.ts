@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import jobRoutes from './routes/job.routes.js';
 import batchRoutes from './routes/batch.routes.js';
+import checklistRoutes from './routes/checklist.routes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 
@@ -52,6 +53,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', batchRoutes);
 app.use('/api/jobs', jobRoutes);
+app.use('/api/checklist', checklistRoutes);
 
 // Basic health check
 app.get('/health', (req: Request, res: Response) => {

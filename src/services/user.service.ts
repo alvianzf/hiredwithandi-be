@@ -120,6 +120,7 @@ export class UserService {
           status: true,
           lastLogin: true,
           createdAt: true,
+          isChecklistComplete: true,
           batch: { select: { id: true, name: true } }
         },
         orderBy: { createdAt: 'desc' },
@@ -166,6 +167,10 @@ export class UserService {
         linkedIn: true,
         avatarUrl: true,
         createdAt: true,
+        isChecklistComplete: true,
+        checklistProgress: {
+          select: { state: true }
+        },
         organization: {
           select: { name: true }
         },
