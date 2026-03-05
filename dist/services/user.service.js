@@ -69,23 +69,41 @@ export class OrganizationService {
     }
 }
 export class UserService {
-    static async getMembersByOrg(orgId, batchId) {
+    static async getMembersByOrg(orgId, params = {}) {
+        const { batchId, page = 1, limit = 10, search, status } = params;
         const whereClause = { orgId, role: 'MEMBER' };
-        if (batchId)
+        if (batchId && batchId !== 'All' && batchId !== '') {
             whereClause.batchId = batchId;
-        return prisma.user.findMany({
-            where: whereClause,
-            select: {
-                id: true,
-                email: true,
-                name: true,
-                status: true,
-                lastLogin: true,
-                createdAt: true,
-                batch: { select: { id: true, name: true } }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
+        }
+        if (search) {
+            whereClause.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } }
+            ];
+        }
+        if (status && status !== 'All') {
+            whereClause.status = status.toUpperCase();
+        }
+        const skip = (page - 1) * limit;
+        const [members, total] = await Promise.all([
+            prisma.user.findMany({
+                where: whereClause,
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    status: true,
+                    lastLogin: true,
+                    createdAt: true,
+                    batch: { select: { id: true, name: true } }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit
+            }),
+            prisma.user.count({ where: whereClause })
+        ]);
+        return { members, total };
     }
     static async getSuperadminStats() {
         const [totalOrganizations, activeOrganizations, totalAdmins, totalMembers, totalPlatformUsers] = await Promise.all([
@@ -194,15 +212,51 @@ export class UserService {
             organization: user.organization?.name || ''
         };
     }
-    static async getAll() {
-        return prisma.user.findMany({
-            include: {
-                organization: {
-                    select: { name: true }
-                }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
+    static async getAll(params = {}) {
+        const { page = 1, limit = 10, search, role, orgId, batchId, status } = params;
+        const skip = (page - 1) * limit;
+        const where = {};
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } }
+            ];
+        }
+        if (role && role !== 'All') {
+            where.role = role === 'Superadmin' ? 'SUPERADMIN' : role === 'Org Admin' ? 'ADMIN' : 'MEMBER';
+        }
+        if (orgId && orgId !== 'All') {
+            if (orgId === 'sys') {
+                where.role = 'SUPERADMIN';
+            }
+            else {
+                where.orgId = orgId;
+            }
+        }
+        if (status && status !== 'All') {
+            where.status = status.toUpperCase();
+        }
+        if (batchId && batchId !== 'All') {
+            where.batchId = batchId;
+        }
+        const [users, total] = await Promise.all([
+            prisma.user.findMany({
+                where,
+                include: {
+                    organization: {
+                        select: { name: true }
+                    },
+                    batch: {
+                        select: { id: true, name: true }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit
+            }),
+            prisma.user.count({ where })
+        ]);
+        return { users, total };
     }
     static async createUser(data) {
         return prisma.user.create({

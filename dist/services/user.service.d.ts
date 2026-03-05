@@ -70,18 +70,27 @@ export declare class OrganizationService {
     }>;
 }
 export declare class UserService {
-    static getMembersByOrg(orgId: string, batchId?: string): Promise<{
-        id: string;
-        email: string;
-        name: string;
-        status: import(".prisma/client").$Enums.UserStatus;
-        createdAt: Date;
-        lastLogin: Date | null;
-        batch: {
+    static getMembersByOrg(orgId: string, params?: {
+        batchId?: string;
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: string;
+    }): Promise<{
+        members: {
             id: string;
+            email: string;
             name: string;
-        } | null;
-    }[]>;
+            status: import(".prisma/client").$Enums.UserStatus;
+            createdAt: Date;
+            lastLogin: Date | null;
+            batch: {
+                id: string;
+                name: string;
+            } | null;
+        }[];
+        total: number;
+    }>;
     static getSuperadminStats(): Promise<{
         totalOrganizations: number;
         activeOrganizations: number;
@@ -119,29 +128,44 @@ export declare class UserService {
         linkedIn: string | null;
         avatarUrl: string | null;
     }>;
-    static getAll(): Promise<({
-        organization: {
+    static getAll(params?: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        role?: string;
+        orgId?: string;
+        batchId?: string;
+        status?: string;
+    }): Promise<{
+        users: ({
+            organization: {
+                name: string;
+            } | null;
+            batch: {
+                id: string;
+                name: string;
+            } | null;
+        } & {
+            id: string;
+            email: string;
+            passwordHash: string | null;
             name: string;
-        } | null;
-    } & {
-        id: string;
-        email: string;
-        passwordHash: string | null;
-        name: string;
-        role: import(".prisma/client").$Enums.Role;
-        status: import(".prisma/client").$Enums.UserStatus;
-        isTest: boolean;
-        orgId: string | null;
-        batchId: string | null;
-        bio: string | null;
-        location: string | null;
-        linkedIn: string | null;
-        avatarUrl: string | null;
-        sessionToken: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        lastLogin: Date | null;
-    })[]>;
+            role: import(".prisma/client").$Enums.Role;
+            status: import(".prisma/client").$Enums.UserStatus;
+            isTest: boolean;
+            orgId: string | null;
+            batchId: string | null;
+            bio: string | null;
+            location: string | null;
+            linkedIn: string | null;
+            avatarUrl: string | null;
+            sessionToken: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            lastLogin: Date | null;
+        })[];
+        total: number;
+    }>;
     static createUser(data: any): Promise<{
         id: string;
         email: string;

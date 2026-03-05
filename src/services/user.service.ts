@@ -286,6 +286,9 @@ export class UserService {
         include: {
           organization: {
             select: { name: true }
+          },
+          batch: {
+            select: { id: true, name: true }
           }
         },
         orderBy: { createdAt: 'desc' },
