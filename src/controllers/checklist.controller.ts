@@ -120,7 +120,7 @@ export const getOrgChecklistStats = async (req: AuthRequest, res: Response): Pro
 
     // Get all users in the org
     const orgUsers = await prisma.user.findMany({
-      where: { orgId, role: 'MEMBER' },
+      where: { orgId: String(orgId), role: 'MEMBER' },
       select: {
         id: true,
         name: true,
