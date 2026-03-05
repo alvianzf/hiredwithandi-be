@@ -71,6 +71,57 @@ async function main() {
 
   // 4. Batches & Members
   const batchNames = ['Spring 2024', 'Summer 2024', 'Winter 2024'];
+  const companies = ['Google', 'Meta', 'Amazon', 'Apple', 'Netflix', 'Microsoft', 'Tesla', 'Airbnb', 'Uber', 'Spotify', 'Twitter', 'LinkedIn', 'Stripe', 'Palantir', 'Adobe'];
+  const positions = ['Software Engineer', 'Frontend Developer', 'Backend Developer', 'Fullstack Engineer', 'Mobile Developer', 'Data Scientist', 'DevOps Engineer', 'Security Engineer', 'Product Manager', 'UX Designer'];
+  const statusIds = ['wishlist', 'applied', 'hr_interview', 'technical_interview', 'additional_interview', 'offered', 'rejected_company', 'rejected_applicant'];
+  const workTypes = ['REMOTE', 'ONSITE', 'HYBRID'];
+
+  async function generateMockJobs(userId: string) {
+    const jobCount = getRandomInt(3, 8);
+    for (let k = 0; k < jobCount; k++) {
+      const company = getRandomElement(companies);
+      const position = getRandomElement(positions);
+      const status = getRandomElement(statusIds);
+      const workType = getRandomElement(workTypes);
+      const dateApplied = new Date();
+      dateApplied.setDate(dateApplied.getDate() - getRandomInt(1, 30));
+
+      const job = await prisma.job.create({
+        data: {
+          userId,
+          company,
+          position,
+          status,
+          dateApplied,
+          boardPosition: k * 1000,
+          workType: workType as any,
+          location: getRandomElement(['Remote', 'San Francisco, CA', 'New York, NY', 'Austin, TX', 'Seattle, WA']),
+          salary: getRandomInt(80, 180) + 'k',
+          notes: 'Mock job generated for testing.',
+        }
+      });
+
+      // Add history
+      await prisma.jobHistory.create({
+        data: {
+          jobId: job.id,
+          status: 'applied',
+          enteredAt: dateApplied,
+        }
+      });
+
+      if (status !== 'applied' && status !== 'wishlist') {
+        await prisma.jobHistory.create({
+          data: {
+            jobId: job.id,
+            status: status,
+            enteredAt: new Date(),
+          }
+        });
+      }
+    }
+  }
+
   for (const name of batchNames) {
     let batch = await prisma.batch.findFirst({
       where: { name, orgId: org.id }
@@ -95,7 +146,7 @@ async function main() {
 
       const existingMember = await prisma.user.findUnique({ where: { email } });
       if (!existingMember) {
-        await prisma.user.create({
+        const member = await prisma.user.create({
           data: {
             email,
             passwordHash: hashedPassword,
@@ -106,9 +157,10 @@ async function main() {
             isTest: true
           }
         });
+        await generateMockJobs(member.id);
       }
     }
-    console.log(`Added ${memberCount} members to ${name}`);
+    console.log(`Added ${memberCount} members and mock jobs to ${name}`);
   }
 
   console.log('Seeded successfully. All accounts use "password123"');
@@ -117,6 +169,7 @@ async function main() {
 main()
   .catch((e) => {
     console.error(e);
+    // @ts-ignore
     process.exit(1);
   })
   .finally(async () => {

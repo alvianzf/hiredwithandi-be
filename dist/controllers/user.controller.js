@@ -48,8 +48,12 @@ export class UserController {
                 return res.status(403).json({ error: { message: 'Organization ID missing' } });
             }
             const batchId = req.query.batchId;
-            const members = await UserService.getMembersByOrg(orgId, batchId);
-            res.json({ data: members });
+            const search = req.query.search;
+            const status = req.query.status;
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const { members, total } = await UserService.getMembersByOrg(orgId, { batchId, page, limit, search, status });
+            res.json({ data: members, meta: { total, page, limit } });
         }
         catch (error) {
             res.status(500).json({ error: { message: error.message } });
@@ -99,8 +103,15 @@ export class UserController {
     }
     static async getAllUsers(req, res) {
         try {
-            const users = await UserService.getAll();
-            res.json({ data: users });
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const search = req.query.search;
+            const role = req.query.role;
+            const orgId = req.query.orgId;
+            const batchId = req.query.batchId;
+            const status = req.query.status;
+            const { users, total } = await UserService.getAll({ page, limit, search, role, orgId, batchId, status });
+            res.json({ data: users, meta: { total, page, limit } });
         }
         catch (error) {
             res.status(500).json({ error: { message: error.message } });
