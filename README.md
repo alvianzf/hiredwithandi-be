@@ -188,7 +188,7 @@ sudo systemctl restart nginx
   "url": "https://careers.google.com/jobs/...",
   "salary": "10k - 15k",
   "notes": "Referral from Andi",
-  "workType": "REMOTE",
+  "workType": "Remote",
   "location": "Jakarta, Indonesia",
   "jobFitPercentage": 85,
   "status": "applied",

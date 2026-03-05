@@ -32,7 +32,7 @@ const options: swaggerJsdoc.Options = {
             position: { type: 'string' },
             url: { type: 'string', nullable: true },
             status: { type: 'string' },
-            workType: { type: 'string', enum: ['REMOTE', 'ONSITE', 'HYBRID'] },
+            workType: { type: 'string', enum: ['Remote', 'On-site', 'Hybrid'] },
             jobFitPercentage: { type: 'number', minimum: 0, maximum: 100 },
             dateApplied: { type: 'string', format: 'date-time' },
           },
